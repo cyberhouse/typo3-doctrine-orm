@@ -1,0 +1,20 @@
+<phpunit backupGlobals="true"
+         backupStaticAttributes="false"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertWarningsToExceptions="true"
+         forceCoversAnnotation="false"
+         processIsolation="false"
+         stopOnError="false"
+         stopOnFailure="false"
+         stopOnIncomplete="false"
+         stopOnSkipped="false"
+         verbose="false">
+
+    <testsuites>
+        <testsuite name="TYPO3 Doctrine ORM">
+            <directory>Tests/</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

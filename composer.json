@@ -1,0 +1,47 @@
+{
+  "name": "cyberhouse/typo3-doctrine-orm",
+  "description": "Extbase and TCA integration of Doctrine ORM for TYPO3 8+",
+  "type": "typo3-cms-extension",
+  "license": "GPL-3.0",
+  "authors": [
+    {
+      "name": "Georg Großberger",
+      "email": "georg.grossberger@cyberhouse.at"
+    }
+  ],
+  "config": {
+    "bin-dir": "bin/",
+    "preferred-install": {
+      "typo3/cms": "source",
+      "*": "dist"
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "Cyberhouse\\DoctrineORM\\": "Classes/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Cyberhouse\\DoctrineORM\\Tests\\": "Tests/"
+    }
+  },
+  "extra": {
+    "typo3/cms": {
+      "cms-package-dir": "{$vendor-dir}/typo3/cms",
+      "prepare-web-dir": false,
+      "extensions-in-vendor-dir": true
+    }
+  },
+  "require": {
+    "php": ">= 7.0",
+    "typo3/cms": "^8.6",
+    "doctrine/orm": "^2.5",
+    "doctrine/annotations": "^1.3"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^6.0",
+    "cyberhouse/phpstyle": "^1.1"
+  }
+}
+

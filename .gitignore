@@ -1,0 +1,7 @@
+/.idea
+/vendor
+/bin
+/composer.lock
+/composer.phar
+/Documentation/_make
+.php_cs.cache
