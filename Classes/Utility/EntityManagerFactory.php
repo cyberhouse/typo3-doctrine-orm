@@ -26,7 +26,7 @@ class EntityManagerFactory implements SingletonInterface
 {
     /**
      * @inject
-     * @var ExtensionRegistry
+     * @var \Cyberhouse\DoctrineORM\Utility\ExtensionRegistry
      */
     protected $registry;
 
