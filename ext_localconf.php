@@ -41,7 +41,11 @@ call_user_func(function () {
         );
     }
 
-    $xclass = \TYPO3\CMS\Core\Database\Schema\ConnectionMigrator::class;
-    $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][$xclass]['className'] =
-        \Cyberhouse\DoctrineORM\Migration\DoctrineConnectionMigrator::class;
+    $signals = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
+    $signals->connect(
+        \TYPO3\CMS\Install\Service\SqlExpectedSchemaService::class,
+        'tablesDefinitionIsBeingBuilt',
+        \Cyberhouse\DoctrineORM\Migration\DoctrineConnectionMigrator::class,
+        'injectEntitySQL'
+    );
 });

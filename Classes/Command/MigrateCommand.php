@@ -12,6 +12,8 @@ namespace Cyberhouse\DoctrineORM\Command;
  */
 
 use Doctrine\ORM\Tools\SchemaTool;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -21,6 +23,29 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class MigrateCommand extends DoctrineCommand
 {
+    /**
+     * @var bool
+     */
+    private $dryRun = false;
+
+    protected function configure()
+    {
+        parent::configure();
+        $this->addOption(
+            'dry-run',
+            'n',
+            InputOption::VALUE_OPTIONAL,
+            'Print SQL statements to be executed instead of running them',
+            false
+        );
+    }
+
+    protected function initialize(InputInterface $input, OutputInterface $output)
+    {
+        parent::initialize($input, $output);
+        $this->dryRun = (bool) $input->getOption('dry-run');
+    }
+
     protected function executeCommand(OutputInterface $output): int
     {
         foreach ($this->extensions as $extension) {
@@ -32,14 +57,22 @@ class MigrateCommand extends DoctrineCommand
             $sqls = $schemaTool->getUpdateSchemaSql($metadatas, true);
 
             if (count($sqls) === 0) {
-                $schemaTool->updateSchema($metadatas, true);
-                $output->write("<success>Done</success>\n");
-
-                if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE) {
-                    $output->writeln('Executed ' . count($sqls) . ' statements:');
+                if ($this->dryRun) {
+                    $output->write("<comment>Dry run, skipping</comment>\n");
+                } else {
+                    $schemaTool->updateSchema($metadatas, true);
+                    $output->write("<success>Done</success>\n");
+                }
+                if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE || $this->dryRun) {
+                    if ($this->dryRun) {
+                        $prefix = 'Would execture ';
+                    } else {
+                        $prefix = 'Executed ';
+                    }
+                    $output->writeln($prefix . count($sqls) . ' statements:');
 
                     foreach ($sqls as $sql) {
-                        $output->writeln('    ' . $sql);
+                        $output->writeln($sql);
                     }
                 }
             } else {

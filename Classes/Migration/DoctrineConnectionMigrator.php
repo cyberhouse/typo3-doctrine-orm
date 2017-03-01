@@ -14,7 +14,11 @@ namespace Cyberhouse\DoctrineORM\Migration;
 use Cyberhouse\DoctrineORM\Utility\EntityManagerFactory;
 use Cyberhouse\DoctrineORM\Utility\ExtensionRegistry;
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\ORM\EntityManager;
+use TYPO3\CMS\Core\Cache\DatabaseSchemaService;
 use TYPO3\CMS\Core\Database\Schema\ConnectionMigrator;
+use TYPO3\CMS\Core\Database\Schema\SchemaMigrator;
+use TYPO3\CMS\Core\Database\Schema\SqlReader;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
@@ -24,27 +28,29 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  *
  * @author Georg Großberger <georg.grossberger@cyberhouse.at>
  */
-class DoctrineConnectionMigrator extends ConnectionMigrator
+class DoctrineConnectionMigrator
 {
-    public function checkConnectionForDoctrineMigrations(Schema $expected, string $connectionName): Schema
-    {
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $registry = $objectManager->get(ExtensionRegistry::class);
+    /**
+     * @inject
+     * @var \Cyberhouse\DoctrineORM\Utility\ExtensionRegistry
+     */
+    protected $registry;
 
-        foreach ($registry->getRegisteredExtensions() as $extension) {
-            if ($this->getConnectionNameForTable($extension) === $connectionName) {
-                $factory = $objectManager->get(EntityManagerFactory::class);
-                $em = $factory->get($extension);
-                $merger = GeneralUtility::makeInstance(MigrationMerger::class, $em);
-                $expected = $merger->mergeWith($expected);
-            }
+    /**
+     * @inject
+     * @var \Cyberhouse\DoctrineORM\Utility\EntityManagerFactory
+     */
+    protected $factory;
+
+    public function injectEntitySQL(array $sqls)
+    {
+        $merger = GeneralUtility::makeInstance(MigrationMerger::class, $sqls);
+
+        foreach ($this->registry->getRegisteredExtensions() as $extension) {
+            $em = $this->factory->get($extension);
+            $merger->mergeWith($em, $extension);
         }
 
-        return $expected;
-    }
-    protected function buildExpectedSchemaDefinitions(string $connectionName): Schema
-    {
-        $expected = parent::buildExpectedSchemaDefinitions($connectionName);
-        return $this->checkConnectionForDoctrineMigrations($expected, $connectionName);
+        return $merger->getResult();
     }
 }

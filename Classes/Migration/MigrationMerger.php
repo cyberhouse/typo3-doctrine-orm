@@ -15,6 +15,9 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\SchemaTool;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Schema\Parser\Parser;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Merge a given schema with the schema of an entity manager
@@ -24,31 +27,32 @@ use Doctrine\ORM\Tools\SchemaTool;
 class MigrationMerger
 {
     /**
-     * @var EntityManager
+     * @var Schema
      */
-    private $em;
+    private $schema;
 
     /**
      * MigrationMerger constructor.
      *
-     * @param EntityManager $em
+     * @param array $source
      */
-    public function __construct(EntityManager $em)
+    public function __construct(array $source)
     {
-        $this->em = $em;
+        $parser = GeneralUtility::makeInstance(Parser::class, implode("\n", $source));
+        $this->schema = new Schema($parser->parse());
     }
 
-    public function mergeWith(Schema $schema)
+    public function mergeWith(EntityManager $em, string $extension)
     {
-        $metadata = $this->em->getMetadataFactory()->getAllMetadata();
-        $schemaTool = new SchemaTool($this->em);
+        $metadata = $em->getMetadataFactory()->getAllMetadata();
+        $schemaTool = new SchemaTool($em);
         $additional = $schemaTool->getSchemaFromMetadata($metadata);
 
         $tables = [];
         $namespaces = [];
 
         /** @var Schema $schema */
-        foreach ([$additional, $schema] as $schema) {
+        foreach ([$additional, $this->schema] as $schema) {
             $namespaces = array_merge($namespaces, $schema->getNamespaces());
 
             foreach ($schema->getTables() as $table) {
@@ -90,13 +94,22 @@ class MigrationMerger
             );
         }
 
-        $expected = new Schema(
+        $this->schema = new Schema(
             $tableObjects,
             $schema->getSequences(),
-            $this->em->getConnection()->getSchemaManager()->createSchemaConfig(),
+            $em->getConnection()->getSchemaManager()->createSchemaConfig(),
             array_unique($namespaces)
         );
+    }
 
-        return $expected;
+    public function getResult()
+    {
+        $cnx = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getConnectionForTable('doctrine_orm')->getDatabasePlatform();
+        $sql = [];
+        $schemaTool = new SchemaTool('');
+        $this->schema->toSql();
+
+        return $sql;
     }
 }

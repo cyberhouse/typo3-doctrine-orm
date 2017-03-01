@@ -32,7 +32,10 @@ abstract class DoctrineCommand extends Command
      */
     protected $factory;
 
-    protected $extensions;
+    /**
+     * @var array|[]string
+     */
+    protected $extensions = [];
 
     protected function configure()
     {
