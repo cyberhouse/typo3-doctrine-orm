@@ -16,7 +16,6 @@ use Doctrine\ORM\Tools\Setup;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Create entity managers by extension context
@@ -25,7 +24,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class EntityManagerFactory implements SingletonInterface
 {
-
     /**
      * @inject
      * @var ExtensionRegistry
@@ -37,6 +35,12 @@ class EntityManagerFactory implements SingletonInterface
      * @var \TYPO3\CMS\Core\Cache\CacheManager
      */
     protected $cacheManager;
+
+    /**
+     * @inject
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     */
+    protected $objectManager;
 
     /**
      * @var array|[]EntityManager
@@ -53,15 +57,20 @@ class EntityManagerFactory implements SingletonInterface
             $paths = $this->registry->getExtensionPaths($extKey);
             $paths[] = ExtensionManagementUtility::extPath('doctrine_orm') . 'Classes/Domain/Model';
 
+            if ($this->cacheManager->hasCache($extKey . '_orm')) {
+                $cache = $this->cacheManager->getCache($extKey . '_orm');
+            } else {
+                $cache = $this->cacheManager->getCache('doctrine_orm');
+            }
+
             $config = Setup::createAnnotationMetadataConfiguration(
                 $paths,
                 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['doctrine_orm']['devMode'],
                 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['doctrine_orm']['proxyDir'],
-                $this->cacheManager->getCache('doctrine_orm')
+                $cache
             );
 
-            $connection = GeneralUtility::makeInstance(ConnectionPool::class)
-                ->getConnectionForTable($extKey);
+            $connection = $this->objectManager->get(ConnectionPool::class)->getConnectionForTable($extKey);
 
             $this->known[$extKey] = EntityManager::create($connection, $config);
         }

@@ -24,7 +24,6 @@ use TYPO3\CMS\Extbase\Persistence\RepositoryInterface;
  */
 abstract class AbstractDoctrineRepository implements RepositoryInterface, SingletonInterface
 {
-
     /**
      * Key of the extension this class is part of
      *
@@ -45,11 +44,12 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface, Single
      * @var string
      */
     protected $modelClassName;
+
     /**
      * @inject
      * @var \Cyberhouse\DoctrineORM\Utility\EntityManagerFactory
      */
-    private $emFactory;
+    private $factory;
 
     public function initializeObject()
     {
@@ -143,6 +143,6 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface, Single
 
     protected function getEntityManager()
     {
-        return $this->emFactory->get($this->extensionKey);
+        return $this->factory->get($this->extensionKey);
     }
 }
