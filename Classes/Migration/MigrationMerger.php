@@ -48,7 +48,7 @@ class MigrationMerger
      *
      * @param array $source
      */
-    public function __construct(array $source)
+    public function initialize(array $source)
     {
         $tables = [];
         $reader = $this->objectManager->get(SqlReader::class);

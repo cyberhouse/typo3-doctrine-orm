@@ -42,9 +42,10 @@ class DoctrineConnectionMigratorTest extends BaseTestCase
 
         $om = $this->getMockBuilder(ObjectManager::class)->disableOriginalConstructor()->getMock();
         $om->expects($this->once())->method('get')
-            ->with($this->equalTo(MigrationMerger::class), $this->equalTo($start))
+            ->with($this->equalTo(MigrationMerger::class))
             ->will($this->returnValue($merger));
 
+        $merger->expects($this->once())->method('initialize')->with($this->equalTo($start));
         $merger->expects($this->once())->method('getResult')->will($this->returnValue($start));
         $merger->expects($this->never())->method('mergeWith');
 
@@ -80,6 +81,7 @@ class DoctrineConnectionMigratorTest extends BaseTestCase
             ->will($this->returnValue(array_keys($ems)));
 
         $merger = $this->getMockBuilder(MigrationMerger::class)->disableOriginalConstructor()->getMock();
+        $merger->expects($this->once())->method('initialize')->with($this->equalTo($start));
         $merger->expects($this->exactly(count($ems)))->method('mergeWith')->withConsecutive(
             [$ems['ext1'], 'ext1'],
             [$ems['ext2'], 'ext2']
@@ -87,7 +89,7 @@ class DoctrineConnectionMigratorTest extends BaseTestCase
 
         $om = $this->getMockBuilder(ObjectManager::class)->disableOriginalConstructor()->getMock();
         $om->expects($this->once())->method('get')
-            ->with($this->equalTo(MigrationMerger::class), $this->equalTo($start))
+            ->with($this->equalTo(MigrationMerger::class))
             ->will($this->returnValue($merger));
 
         $merger->expects($this->once())->method('getResult')->will($this->returnValue($start));

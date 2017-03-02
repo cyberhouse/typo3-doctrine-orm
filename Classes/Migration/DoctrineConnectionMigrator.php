@@ -39,7 +39,8 @@ class DoctrineConnectionMigrator
 
     public function addEntitySQL(array $sqls)
     {
-        $merger = $this->objectManager->get(MigrationMerger::class, $sqls);
+        $merger = $this->objectManager->get(MigrationMerger::class);
+        $merger->initialize($sqls);
 
         foreach ($this->registry->getRegisteredExtensions() as $extension) {
             $em = $this->factory->get($extension);
