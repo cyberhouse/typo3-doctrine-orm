@@ -60,6 +60,11 @@ class EntityManagerFactory implements SingletonInterface
             if ($this->cacheManager->hasCache($extKey . '_orm')) {
                 $cache = $this->cacheManager->getCache($extKey . '_orm');
             } else {
+                if (!$this->cacheManager->hasCache('doctrine_orm')) {
+                    $config = $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations'];
+                    $this->cacheManager->setCacheConfigurations($config);
+                }
+
                 $cache = $this->cacheManager->getCache('doctrine_orm');
             }
 
@@ -67,7 +72,8 @@ class EntityManagerFactory implements SingletonInterface
                 $paths,
                 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['doctrine_orm']['devMode'],
                 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['doctrine_orm']['proxyDir'],
-                $cache
+                $cache,
+                false
             );
 
             $connection = $this->objectManager->get(ConnectionPool::class)->getConnectionForTable($extKey);
