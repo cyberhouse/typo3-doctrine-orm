@@ -12,7 +12,7 @@ fix: ./vendor/autoload.php
 .PONY: default test lint fix
 
 ./vendor/autoload.php: ./composer.phar
-	php composer.phar install -o --no-sugget -n
+	php composer.phar install -o --no-suggest -n
 
 ./composer.phar:
 	curl -q https://getcomposer.org/installer | php

@@ -11,8 +11,6 @@ namespace Cyberhouse\DoctrineORM\Migration;
  * <https://www.gnu.org/licenses/gpl-3.0.html>
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-
 /**
  * Add Doctrine entity schema definitions to the database
  * migration of the default migrator
@@ -21,6 +19,12 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class DoctrineConnectionMigrator
 {
+    /**
+     * @inject
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     */
+    protected $objectManager;
+
     /**
      * @inject
      * @var \Cyberhouse\DoctrineORM\Utility\ExtensionRegistry
@@ -35,7 +39,7 @@ class DoctrineConnectionMigrator
 
     public function addEntitySQL(array $sqls)
     {
-        $merger = GeneralUtility::makeInstance(MigrationMerger::class, $sqls);
+        $merger = $this->objectManager->get(MigrationMerger::class, $sqls);
 
         foreach ($this->registry->getRegisteredExtensions() as $extension) {
             $em = $this->factory->get($extension);

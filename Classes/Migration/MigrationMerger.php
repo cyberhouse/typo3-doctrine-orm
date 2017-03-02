@@ -19,7 +19,6 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Schema\Exception\StatementException;
 use TYPO3\CMS\Core\Database\Schema\Parser\Parser;
 use TYPO3\CMS\Core\Database\Schema\SqlReader;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Merge a given schema with the schema of an entity manager
@@ -28,6 +27,12 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class MigrationMerger
 {
+    /**
+     * @inject
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     */
+    protected $objectManager;
+
     /**
      * @var Schema
      */
@@ -46,15 +51,16 @@ class MigrationMerger
     public function __construct(array $source)
     {
         $tables = [];
-        $reader = GeneralUtility::makeInstance(SqlReader::class);
+        $reader = $this->objectManager->get(SqlReader::class);
 
         foreach ($source as $statement) {
             $creates = $reader->getCreateTableStatementArray($statement);
 
             foreach ($creates as $createStatement) {
-                $parser = GeneralUtility::makeInstance(Parser::class, $createStatement);
+                $parser = $this->objectManager->get(Parser::class, $createStatement);
 
                 try {
+                    /** @var Table $table */
                     foreach ($parser->parse() as $table) {
                         $name = $this->unquote($table->getName());
 
@@ -64,24 +70,23 @@ class MigrationMerger
 
                         $tables[$name] = $table;
                     }
-                } catch (StatementException $statementException) {
-                    // Enrich the error message with the full invalid statement
+                } catch (StatementException $ex) {
                     throw new StatementException(
-                        $statementException->getMessage() . ' in statement: ' . LF . $createStatement,
+                        $ex->getMessage() . ' in statement: ' . LF . $createStatement,
                         1476171315,
-                        $statementException
+                        $ex
                     );
                 }
             }
         }
 
-        $this->schema = new Schema(array_values($tables));
+        $this->schema = $this->objectManager->get(Schema::class, array_values($tables));
     }
 
     public function mergeWith(EntityManager $em, string $extension)
     {
         $metadata = $em->getMetadataFactory()->getAllMetadata();
-        $schemaTool = new SchemaTool($em);
+        $schemaTool = $this->objectManager->get(SchemaTool::class, $em);
         $additional = $schemaTool->getSchemaFromMetadata($metadata);
 
         $tables = [];
@@ -105,16 +110,19 @@ class MigrationMerger
         $config = $em->getConnection()->getSchemaManager()->createSchemaConfig();
         $config->setName($this->schema->getName());
 
-        $this->schema = new Schema(
+        $this->schema = $this->objectManager->get(
+            Schema::class,
             array_values($tables),
             [],
             $config,
             array_unique($namespaces)
         );
 
-        $platform = GeneralUtility::makeInstance(ConnectionPool::class)
+        $platform = $this->objectManager
+            ->get(ConnectionPool::class)
             ->getConnectionForTable($extension)
             ->getDatabasePlatform();
+
         $this->result = $this->schema->toSql($platform);
     }
 
@@ -135,6 +143,7 @@ class MigrationMerger
             'options'       => $a->getOptions(),
         ];
 
+        /** @var Table $table */
         foreach ([$a, $b] as $table) {
             foreach ($table->getColumns() as $column) {
                 $data['columns'][$this->unquote($column->getName())] = $column;
@@ -149,7 +158,8 @@ class MigrationMerger
             }
         }
 
-        return new Table(
+        return $this->objectManager->get(
+            Table::class,
             $a->getName(),
             array_values($data['columns']),
             array_values($data['indexes']),

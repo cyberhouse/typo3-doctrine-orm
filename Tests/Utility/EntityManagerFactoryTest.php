@@ -108,10 +108,8 @@ class EntityManagerFactoryTest extends BaseTestCase
         $cm = $this->getMockBuilder(CacheManager::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $cm->expects($this->once())
-            ->method('hasCache')
-            ->with($this->equalTo($extKey . '_orm'))
-            ->will($this->returnValue(false));
+
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations'] = [];
 
         $cm->expects($this->once())
             ->method('getCache')
