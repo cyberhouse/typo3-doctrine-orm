@@ -14,11 +14,17 @@ namespace Cyberhouse\DoctrineORM\Domain\Model;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Page entity of type recycler
+ * A mount page
  *
  * @ORM\Entity
  * @author Georg Großberger <georg.grossberger@cyberhouse.at>
  */
-class PageRecycler extends Page
+class PageMountpoint extends PageFrontend
 {
+    /**
+     * @ORM\JoinColumn(name="mount_pid", referencedColumnName="uid", onDelete="SET NULL")
+     * @ORM\ManyToOne(targetEntity="Page")
+     * @var Page
+     */
+    protected $mountPoint;
 }

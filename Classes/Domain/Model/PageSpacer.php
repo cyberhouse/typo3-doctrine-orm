@@ -11,9 +11,12 @@ namespace Cyberhouse\DoctrineORM\Domain\Model;
  * <https://www.gnu.org/licenses/gpl-3.0.html>
  */
 
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * Page entity of type spacer
  *
+ * @ORM\Entity
  * @author Georg Großberger <georg.grossberger@cyberhouse.at>
  */
 class PageSpacer extends Page

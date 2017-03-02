@@ -27,6 +27,7 @@ use Doctrine\ORM\Mapping as ORM;
  *     254 = "PageSysFolder",
  *     255 = "PageRecycler"
  * })
+ * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\Entity
  * @ORM\Table(name="pages")
  * @author Georg Großberger <georg.grossberger@cyberhouse.at>

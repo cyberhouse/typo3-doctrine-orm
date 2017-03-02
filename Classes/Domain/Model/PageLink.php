@@ -14,11 +14,16 @@ namespace Cyberhouse\DoctrineORM\Domain\Model;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Page entity of type recycler
+ * A link page
  *
  * @ORM\Entity
  * @author Georg Großberger <georg.grossberger@cyberhouse.at>
  */
-class PageRecycler extends Page
+class PageLink extends PageFrontend
 {
+    /**
+     * @ORM\Column(name="url", type="string")
+     * @var string
+     */
+    private $target;
 }
