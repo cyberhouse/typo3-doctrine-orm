@@ -24,6 +24,7 @@ use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
  */
 class DoctrineCapableFrontend extends VariableFrontend implements Cache
 {
+
     /**
      * Fetch / get a cache entry
      *
@@ -32,7 +33,7 @@ class DoctrineCapableFrontend extends VariableFrontend implements Cache
      */
     public function fetch($id)
     {
-        return $this->get($id);
+        return $this->get($this->fixKey($id));
     }
 
     /**
@@ -43,7 +44,7 @@ class DoctrineCapableFrontend extends VariableFrontend implements Cache
      */
     public function contains($id)
     {
-        return $this->has($id);
+        return $this->has($this->fixKey($id));
     }
 
     /**
@@ -54,20 +55,22 @@ class DoctrineCapableFrontend extends VariableFrontend implements Cache
      * @param string $id
      * @param mixed $data
      * @param int $lifeTime
+     * @return bool|void
      */
     public function save($id, $data, $lifeTime = 0)
     {
-        $this->set($id, $data, $lifeTime);
+        $this->set($this->fixKey($id), $data, [], $lifeTime);
     }
 
     /**
      * Remove / delete a cache entry
      *
      * @param string $id
+     * @return bool|void
      */
     public function delete($id)
     {
-        $this->remove($id);
+        $this->remove($this->fixKey($id));
     }
 
     /**
@@ -80,5 +83,9 @@ class DoctrineCapableFrontend extends VariableFrontend implements Cache
     public function getStats()
     {
         return null;
+    }
+    private function fixKey($key)
+    {
+        return preg_replace('/[^a-zA-Z0-9_%\\-&]+/', '%', $key);
     }
 }
