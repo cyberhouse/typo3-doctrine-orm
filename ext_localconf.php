@@ -14,9 +14,11 @@ call_user_func(function () {
     $caches = & $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations'];
 
     if (!isset($caches['doctrine_orm'])) {
-        $caches['doctrine_orm'] = [
-            'frontend' => \Cyberhouse\DoctrineORM\Frontend\DoctrineCapableFrontend::class,
-        ];
+        $caches['doctrine_orm'] = [];
+    }
+
+    if (empty($caches['doctrine_orm']['frontend'])) {
+        $caches['doctrine_orm']['frontend'] = \Cyberhouse\DoctrineORM\Frontend\DoctrineCapableFrontend::class;
     }
 
     if (empty($caches['doctrine_orm']['backend'])) {
@@ -46,6 +48,6 @@ call_user_func(function () {
         \TYPO3\CMS\Install\Service\SqlExpectedSchemaService::class,
         'tablesDefinitionIsBeingBuilt',
         \Cyberhouse\DoctrineORM\Migration\DoctrineConnectionMigrator::class,
-        'injectEntitySQL'
+        'addEntitySQL'
     );
 });
