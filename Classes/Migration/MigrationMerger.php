@@ -19,6 +19,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Schema\Exception\StatementException;
 use TYPO3\CMS\Core\Database\Schema\Parser\Parser;
 use TYPO3\CMS\Core\Database\Schema\SqlReader;
+use TYPO3\CMS\Core\Utility\StringUtility;
 
 /**
  * Merge a given schema with the schema of an entity manager
@@ -123,7 +124,36 @@ class MigrationMerger
             ->getConnectionForTable($extension)
             ->getDatabasePlatform();
 
-        $this->result = $this->schema->toSql($platform);
+        $creates = [];
+        $alters = [];
+
+        foreach ($this->schema->toSql($platform) as $statement) {
+            if (StringUtility::beginsWith($statement, 'CREATE TABLE ')) {
+                $name = $this->unquote(substr($statement, 13, stripos($statement, ' ', 13)));
+
+                if (isset($creates[$name])) {
+                    throw new \UnexpectedValueException('Several create statements for table ' . $name . ' present');
+                }
+
+                $creates[$name] = $statement;
+            } elseif (StringUtility::beginsWith($statement, 'ALTER TABLE ')) {
+                $alters[] = $statement;
+            } else {
+                throw new \UnexpectedValueException('Only CREATE and ALTER SQLs are allowed, found ' . $statement);
+            }
+        }
+
+        foreach ($alters as $statement) {
+            $name = $this->unquote(substr($statement, 12, stripos($statement, ' ', 12)));
+
+            if (!isset($creates[$name])) {
+                throw new \UnexpectedValueException('No CREATE for table ' . $name . ' found');
+            }
+
+            $creates[$name] = rtrim($creates[$name], "); \t\n\r\v") . ', ' . $statement . ')';
+        }
+
+        $this->result = array_values($creates);
     }
 
     public function getResult()
