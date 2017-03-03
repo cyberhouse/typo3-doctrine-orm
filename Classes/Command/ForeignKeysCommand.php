@@ -32,9 +32,12 @@ class ForeignKeysCommand extends DoctrineCommand
     protected function configure()
     {
         parent::configure();
+
+        $this->setDescription('Migrate only foreign key definitions.');
+
         $this->addOption(
             'dry-run',
-            'n',
+            'd',
             InputOption::VALUE_OPTIONAL,
             'Print SQL statements to be executed instead of running them',
             false
@@ -61,13 +64,20 @@ class ForeignKeysCommand extends DoctrineCommand
                 return StringUtility::beginsWith($line, 'ALTER TABLE') && stripos($line, 'FOREIGN KEY') !== false;
             });
 
-            if (count($sqls) === 0) {
+            if (count($sqls)  > 0) {
                 if ($this->dryRun) {
                     $output->write("<comment>Dry run, skipping</comment>\n");
                 } else {
-                    $schemaTool->updateSchema($metadatas, true);
-                    $output->write("<success>Done</success>\n");
+                    $em->getConnection()->executeUpdate('SET foreign_key_checks = 0');
+
+                    foreach ($sqls as $sql) {
+                        $em->getConnection()->executeUpdate($sql);
+                    }
+
+                    $em->getConnection()->executeUpdate('SET foreign_key_checks = 1');
+                    $output->write("<info>Done</info>\n");
                 }
+
                 if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE || $this->dryRun) {
                     if ($this->dryRun) {
                         $prefix = 'Would execute ';
@@ -81,7 +91,7 @@ class ForeignKeysCommand extends DoctrineCommand
                     }
                 }
             } else {
-                $output->write("<success>Nothing to do</success>\n");
+                $output->write("<info>Nothing to do</info>\n");
             }
         }
         return 0;

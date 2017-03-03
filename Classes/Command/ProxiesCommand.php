@@ -33,13 +33,13 @@ class ProxiesCommand extends DoctrineCommand
             GeneralUtility::mkdir_deep($destDir);
             $em->getProxyFactory()->generateProxyClasses($metadatas, $destDir);
 
-            $output->write("<success>Done</success>\n");
+            $output->write("<info>Done</info>\n");
 
             if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE) {
                 $output->writeln('Generated proxies for ' . count($metadatas) . ' entities:');
 
                 foreach ($metadatas as $metadata) {
-                    $output->writeln('    ' . $metadata->name);
+                    $output->writeln($metadata->name);
                 }
             }
         }

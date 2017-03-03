@@ -49,16 +49,17 @@ abstract class DoctrineCommand extends Command
 
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
+        $output->setDecorated(true);
+
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $registry = $objectManager->get(ExtensionRegistry::class);
-
         $extensions = $registry->getRegisteredExtensions();
 
         if (empty($extensions)) {
             throw new \UnexpectedValueException('No extensions registered');
         }
 
-        if ($input->hasOption('extension')) {
+        if (trim($input->getOption('extension')) !== '') {
             $limitTo = (string) $input->getOption('extension');
 
             if (!in_array($limitTo, $extensions)) {

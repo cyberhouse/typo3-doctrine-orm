@@ -31,9 +31,12 @@ class MigrateCommand extends DoctrineCommand
     protected function configure()
     {
         parent::configure();
+
+        $this->setDescription('Migrate Doctrine entites only, ignoring all DDL in ext_tables.sql');
+
         $this->addOption(
             'dry-run',
-            'n',
+            'd',
             InputOption::VALUE_OPTIONAL,
             'Print SQL statements to be executed instead of running them',
             false
@@ -56,13 +59,16 @@ class MigrateCommand extends DoctrineCommand
             $schemaTool = new SchemaTool($em);
             $sqls = $schemaTool->getUpdateSchemaSql($metadatas, true);
 
-            if (count($sqls) === 0) {
+            if (count($sqls) > 0) {
                 if ($this->dryRun) {
                     $output->write("<comment>Dry run, skipping</comment>\n");
                 } else {
+                    $em->getConnection()->executeUpdate('SET foreign_key_checks = 0');
                     $schemaTool->updateSchema($metadatas, true);
-                    $output->write("<success>Done</success>\n");
+                    $em->getConnection()->executeUpdate('SET foreign_key_checks = 1');
+                    $output->write("<info>Done</info>\n");
                 }
+
                 if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE || $this->dryRun) {
                     if ($this->dryRun) {
                         $prefix = 'Would execute ';
@@ -76,7 +82,7 @@ class MigrateCommand extends DoctrineCommand
                     }
                 }
             } else {
-                $output->write("<success>Nothing to do</success>\n");
+                $output->write("<info>Nothing to do</info>\n");
             }
         }
         return 0;
