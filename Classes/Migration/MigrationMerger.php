@@ -101,7 +101,7 @@ class MigrationMerger
                 $name = $this->unquote($table->getName());
 
                 if (isset($tables[$name])) {
-                    $table = $this->mergeTables($tables[$name], $table);
+                    $table = $this->mergeTables($table, $tables[$name]);
                 }
 
                 $tables[$name] = $table;
@@ -125,32 +125,17 @@ class MigrationMerger
             ->getDatabasePlatform();
 
         $creates = [];
-        $alters = [];
 
         foreach ($this->schema->toSql($platform) as $statement) {
             if (StringUtility::beginsWith($statement, 'CREATE TABLE ')) {
-                $name = $this->unquote(substr($statement, 13, stripos($statement, ' ', 13)));
+                $name = $this->unquote(substr($statement, 13, stripos($statement, ' ', 13) - 13));
 
                 if (isset($creates[$name])) {
                     throw new \UnexpectedValueException('Several create statements for table ' . $name . ' present');
                 }
 
                 $creates[$name] = $statement;
-            } elseif (StringUtility::beginsWith($statement, 'ALTER TABLE ')) {
-                $alters[] = $statement;
-            } else {
-                throw new \UnexpectedValueException('Only CREATE and ALTER SQLs are allowed, found ' . $statement);
             }
-        }
-
-        foreach ($alters as $statement) {
-            $name = $this->unquote(substr($statement, 12, stripos($statement, ' ', 12)));
-
-            if (!isset($creates[$name])) {
-                throw new \UnexpectedValueException('No CREATE for table ' . $name . ' found');
-            }
-
-            $creates[$name] = rtrim($creates[$name], "); \t\n\r\v") . ', ' . $statement . ')';
         }
 
         $this->result = array_values($creates);
