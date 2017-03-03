@@ -15,13 +15,14 @@ use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use TYPO3\CMS\Core\Utility\StringUtility;
 
 /**
- * Migrate all Doctrine ORM entity manager schemas
+ * Migrate foreign keys only
  *
  * @author Georg Großberger <georg.grossberger@cyberhouse.at>
  */
-class MigrateCommand extends DoctrineCommand
+class ForeignKeysCommand extends DoctrineCommand
 {
     /**
      * @var bool
@@ -55,6 +56,10 @@ class MigrateCommand extends DoctrineCommand
             $metadatas = $em->getMetadataFactory()->getAllMetadata();
             $schemaTool = new SchemaTool($em);
             $sqls = $schemaTool->getUpdateSchemaSql($metadatas, true);
+
+            $sqls = array_filter($sqls, function ($line) {
+                return StringUtility::beginsWith($line, 'ALTER TABLE') && stripos($line, 'FOREIGN KEY') !== false;
+            });
 
             if (count($sqls) === 0) {
                 if ($this->dryRun) {
