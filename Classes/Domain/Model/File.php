@@ -35,7 +35,7 @@ class File extends AbstractDoctrineEntity
     private $processedFiles;
 
     /**
-     * @ORM\JoinColumn(name="storage", referencedColumnName="uid")
+     * @ORM\JoinColumn(name="storage", referencedColumnName="uid", nullable=true, onDelete="SET NULL")
      * @ORM\ManyToOne(targetEntity="Storage")
      * @var Storage
      */
