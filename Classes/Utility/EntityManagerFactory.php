@@ -88,6 +88,13 @@ class EntityManagerFactory implements SingletonInterface
 
     public function reset($extKey)
     {
-        unset($this->known[$extKey]);
+        if (isset($this->known[$extKey])) {
+            $em = $this->known[$extKey];
+
+            if ($em instanceof EntityManager && $em->isOpen()) {
+                $em->close();
+            }
+            unset($this->known[$extKey]);
+        }
     }
 }
