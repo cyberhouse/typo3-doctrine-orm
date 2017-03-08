@@ -68,10 +68,12 @@ class EntityManagerFactory implements SingletonInterface
                 $cache = $this->cacheManager->getCache('doctrine_orm');
             }
 
+            $proxiesDir = rtrim($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['doctrine_orm']['proxyDir'], '/') . '/';
+
             $config = Setup::createAnnotationMetadataConfiguration(
                 $paths,
                 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['doctrine_orm']['devMode'],
-                $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['doctrine_orm']['proxyDir'],
+                $proxiesDir . $extKey,
                 $cache,
                 false
             );
