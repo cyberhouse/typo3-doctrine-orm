@@ -13,11 +13,13 @@ namespace Cyberhouse\DoctrineORM\Command;
 
 use Cyberhouse\DoctrineORM\Utility\EntityManagerFactory;
 use Cyberhouse\DoctrineORM\Utility\ExtensionRegistry;
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\StringUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
@@ -37,6 +39,11 @@ abstract class DoctrineCommand extends Command
      */
     protected $extensions = [];
 
+    /**
+     * @var bool
+     */
+    protected $dryRun = false;
+
     protected function configure()
     {
         $this->addOption(
@@ -45,42 +52,69 @@ abstract class DoctrineCommand extends Command
             InputOption::VALUE_OPTIONAL,
             'Limit migration to given extension'
         );
+
+        $this->addOption(
+            'dry-run',
+            'd',
+            InputOption::VALUE_OPTIONAL,
+            'Print SQL statements to be executed instead of running them',
+            false
+        );
     }
 
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
-        $output->setDecorated(true);
-
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $registry = $objectManager->get(ExtensionRegistry::class);
-        $extensions = $registry->getRegisteredExtensions();
-
-        if (empty($extensions)) {
-            throw new \UnexpectedValueException('No extensions registered');
-        }
-
-        if (trim($input->getOption('extension')) !== '') {
-            $limitTo = (string) $input->getOption('extension');
-
-            if (!in_array($limitTo, $extensions)) {
-                throw new \InvalidArgumentException('No such extension registered');
-            }
-
-            $extensions = [$limitTo];
-        }
-
-        $this->extensions = $extensions;
-        $this->factory = $objectManager->get(EntityManagerFactory::class);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
+            $output->setDecorated(true);
+
+            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+            $registry = $objectManager->get(ExtensionRegistry::class);
+            $extensions = $registry->getRegisteredExtensions();
+
+            if (empty($extensions)) {
+                throw new \UnexpectedValueException('No extensions registered');
+            }
+
+            if (trim($input->getOption('extension')) !== '') {
+                $limitTo = (string) $input->getOption('extension');
+
+                if (!in_array($limitTo, $extensions)) {
+                    throw new \InvalidArgumentException('No such extension registered');
+                }
+
+                $extensions = [$limitTo];
+            }
+
+            $this->extensions = $extensions;
+            $this->factory = $objectManager->get(EntityManagerFactory::class);
+            $this->dryRun = (bool) $input->getOption('dry-run');
+
             return $this->executeCommand($output);
         } catch (\Throwable $ex) {
             $output->writeln('<error>' . $ex->getMessage() . '</error>');
             return 1;
         }
+    }
+
+    protected function getMetaData(EntityManager $em)
+    {
+        $metadatas = $em->getMetadataFactory()->getAllMetadata();
+        $metadatas = array_filter($metadatas, function (\Doctrine\ORM\Mapping\ClassMetadata $class) {
+            $result = true;
+
+            if ($class->name !== 'Cyberhouse\\DoctrineORM\\Domain\\Model\\AbstractDoctrineEntity') {
+                if (StringUtility::beginsWith($class->name, 'Cyberhouse\\DoctrineORM\\')) {
+                    $result = false;
+                }
+            }
+            return $result;
+        });
+
+        return $metadatas;
     }
 
     abstract protected function executeCommand(OutputInterface $output): int;

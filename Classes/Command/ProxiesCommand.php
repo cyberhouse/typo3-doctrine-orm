@@ -21,6 +21,12 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class ProxiesCommand extends DoctrineCommand
 {
+    protected function configure()
+    {
+        parent::configure();
+        $this->setDescription('Generate proxy classes of entities');
+    }
+
     protected function executeCommand(OutputInterface $output): int
     {
         foreach ($this->extensions as $extension) {
@@ -30,8 +36,10 @@ class ProxiesCommand extends DoctrineCommand
             $metadatas = $em->getMetadataFactory()->getAllMetadata();
             $destDir = $em->getConfiguration()->getProxyDir();
 
-            GeneralUtility::mkdir_deep($destDir);
-            $em->getProxyFactory()->generateProxyClasses($metadatas, $destDir);
+            if (!$this->dryRun) {
+                GeneralUtility::mkdir_deep($destDir);
+                $em->getProxyFactory()->generateProxyClasses($metadatas, $destDir);
+            }
 
             $output->write("<info>Done</info>\n");
 

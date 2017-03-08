@@ -12,10 +12,7 @@ namespace Cyberhouse\DoctrineORM\Command;
  */
 
 use Doctrine\ORM\Tools\SchemaTool;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use TYPO3\CMS\Core\Utility\StringUtility;
 
 /**
  * Migrate foreign keys only
@@ -24,30 +21,10 @@ use TYPO3\CMS\Core\Utility\StringUtility;
  */
 class ForeignKeysCommand extends DoctrineCommand
 {
-    /**
-     * @var bool
-     */
-    private $dryRun = false;
-
     protected function configure()
     {
         parent::configure();
-
         $this->setDescription('Migrate only foreign key definitions.');
-
-        $this->addOption(
-            'dry-run',
-            'd',
-            InputOption::VALUE_OPTIONAL,
-            'Print SQL statements to be executed instead of running them',
-            false
-        );
-    }
-
-    protected function initialize(InputInterface $input, OutputInterface $output)
-    {
-        parent::initialize($input, $output);
-        $this->dryRun = (bool) $input->getOption('dry-run');
     }
 
     protected function executeCommand(OutputInterface $output): int
@@ -56,15 +33,15 @@ class ForeignKeysCommand extends DoctrineCommand
             $output->write('Migrating ' . $extension . ' ... ');
 
             $em = $this->factory->get($extension);
-            $metadatas = $em->getMetadataFactory()->getAllMetadata();
+            $metadatas = $this->getMetaData($em);
             $schemaTool = new SchemaTool($em);
             $sqls = $schemaTool->getUpdateSchemaSql($metadatas, true);
 
             $sqls = array_filter($sqls, function ($line) {
-                return StringUtility::beginsWith($line, 'ALTER TABLE') && stripos($line, 'FOREIGN KEY') !== false;
+                return stripos($line, 'FOREIGN KEY') !== false;
             });
 
-            if (count($sqls)  > 0) {
+            if (count($sqls) > 0) {
                 if ($this->dryRun) {
                     $output->write("<comment>Dry run, skipping</comment>\n");
                 } else {

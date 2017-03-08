@@ -12,8 +12,6 @@ namespace Cyberhouse\DoctrineORM\Command;
  */
 
 use Doctrine\ORM\Tools\SchemaTool;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -31,22 +29,7 @@ class MigrateCommand extends DoctrineCommand
     protected function configure()
     {
         parent::configure();
-
         $this->setDescription('Migrate Doctrine entites only, ignoring all DDL in ext_tables.sql');
-
-        $this->addOption(
-            'dry-run',
-            'd',
-            InputOption::VALUE_OPTIONAL,
-            'Print SQL statements to be executed instead of running them',
-            false
-        );
-    }
-
-    protected function initialize(InputInterface $input, OutputInterface $output)
-    {
-        parent::initialize($input, $output);
-        $this->dryRun = (bool) $input->getOption('dry-run');
     }
 
     protected function executeCommand(OutputInterface $output): int
@@ -55,8 +38,8 @@ class MigrateCommand extends DoctrineCommand
             $output->write('Migrating ' . $extension . ' ... ');
 
             $em = $this->factory->get($extension);
-            $metadatas = $em->getMetadataFactory()->getAllMetadata();
             $schemaTool = new SchemaTool($em);
+            $metadatas = $this->getMetaData($em);
             $sqls = $schemaTool->getUpdateSchemaSql($metadatas, true);
 
             if (count($sqls) > 0) {
