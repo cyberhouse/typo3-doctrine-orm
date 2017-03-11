@@ -94,7 +94,7 @@ class EntityManagerFactory implements SingletonInterface
             if ($em instanceof EntityManager && $em->isOpen()) {
                 $em->close();
             }
-            unset($this->known[$extKey]);
+            unset($em, $this->known[$extKey]);
         }
     }
 }
