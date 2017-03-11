@@ -14,6 +14,9 @@ return [
     'doctrine:migrate' => [
         'class' => \Cyberhouse\DoctrineORM\Command\MigrateCommand::class,
     ],
+    'doctrine:showsql' => [
+        'class' => \Cyberhouse\DoctrineORM\Command\PrintCreateCommand::class,
+    ],
     'doctrine:fks' => [
         'class' => \Cyberhouse\DoctrineORM\Command\ForeignKeysCommand::class,
     ],
