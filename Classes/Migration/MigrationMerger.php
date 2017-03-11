@@ -11,6 +11,7 @@ namespace Cyberhouse\DoctrineORM\Migration;
  * <https://www.gnu.org/licenses/gpl-3.0.html>
  */
 
+use Cyberhouse\DoctrineORM\Database\IdentifierQuotes;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\ORM\EntityManager;
@@ -19,6 +20,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Schema\Exception\StatementException;
 use TYPO3\CMS\Core\Database\Schema\Parser\Parser;
 use TYPO3\CMS\Core\Database\Schema\SqlReader;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\StringUtility;
 
 /**
@@ -45,6 +47,16 @@ class MigrationMerger
     private $result = [];
 
     /**
+     * @var IdentifierQuotes
+     */
+    private $quotes;
+
+    public function __construct()
+    {
+        $this->quotes = GeneralUtility::makeInstance(IdentifierQuotes::class);
+    }
+
+    /**
      * MigrationMerger constructor.
      *
      * @param array $source
@@ -63,7 +75,7 @@ class MigrationMerger
                 try {
                     /** @var Table $table */
                     foreach ($parser->parse() as $table) {
-                        $name = $this->unquote($table->getName());
+                        $name = $this->quotes->remove($table->getName());
 
                         if (isset($tables[$name])) {
                             $table = $this->mergeTables($tables[$name], $table);
@@ -98,7 +110,7 @@ class MigrationMerger
             $namespaces = array_merge($namespaces, $schema->getNamespaces());
 
             foreach ($schema->getTables() as $table) {
-                $name = $this->unquote($table->getName());
+                $name = $this->quotes->remove($table->getName());
 
                 if (isset($tables[$name])) {
                     $table = $this->mergeTables($table, $tables[$name]);
@@ -128,7 +140,7 @@ class MigrationMerger
 
         foreach ($this->schema->toSql($platform) as $statement) {
             if (StringUtility::beginsWith($statement, 'CREATE TABLE ')) {
-                $name = $this->unquote(substr($statement, 13, stripos($statement, ' ', 13) - 13));
+                $name = $this->quotes->remove(substr($statement, 13, stripos($statement, ' ', 13) - 13));
 
                 if (isset($creates[$name])) {
                     throw new \UnexpectedValueException('Several create statements for table ' . $name . ' present');
@@ -161,15 +173,15 @@ class MigrationMerger
         /** @var Table $table */
         foreach ([$a, $b] as $table) {
             foreach ($table->getColumns() as $column) {
-                $data['columns'][$this->unquote($column->getName())] = $column;
+                $data['columns'][$this->quotes->remove($column->getName())] = $column;
             }
 
             foreach ($table->getIndexes() as $index) {
-                $data['indexes'][$this->unquote($index->getName())] = $index;
+                $data['indexes'][$this->quotes->remove($index->getName())] = $index;
             }
 
             foreach ($table->getForeignKeys() as $fk) {
-                $data['fkConstraints'][$this->unquote($fk->getName())] = $fk;
+                $data['fkConstraints'][$this->quotes->remove($fk->getName())] = $fk;
             }
         }
 
@@ -182,10 +194,5 @@ class MigrationMerger
             0,
             $data['options']
         );
-    }
-
-    protected function unquote($identifier)
-    {
-        return trim(trim(trim($identifier), '`'));
     }
 }
