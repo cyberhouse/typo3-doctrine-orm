@@ -20,7 +20,7 @@ class IdentifierQuotes
 {
     public function remove($identifier)
     {
-        return trim(trim(trim($identifier), '`'));
+        return trim(trim($identifier), '`');
     }
 
     public function has($identifier)

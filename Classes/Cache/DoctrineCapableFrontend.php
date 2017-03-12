@@ -84,6 +84,13 @@ class DoctrineCapableFrontend extends VariableFrontend implements Cache
     {
         return null;
     }
+
+    /**
+     * Ensure a string that is a valid TYPO3 cache key
+     *
+     * @param string $key
+     * @return string
+     */
     private function fixKey($key)
     {
         return preg_replace('/[^a-zA-Z0-9_%\\-&]+/', '%', $key);
