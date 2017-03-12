@@ -44,7 +44,7 @@ When using Doctrine ORM, we need alternate implementations, so add the following
        settings {} # The well known settings array
        objects {
            Cyberhouse\DoctrineORM\Persistence\DoctrinePersistenceManager {
-               implements = TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
+               implements = TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface
            }
            Cyberhouse\DoctrineORM\Persistence\DoctrineQuery {
                implements = TYPO3\CMS\Extbase\Persistence\QueryInterface
