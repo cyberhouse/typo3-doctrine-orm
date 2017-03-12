@@ -11,6 +11,7 @@ namespace Cyberhouse\DoctrineORM\Migration;
  * <https://www.gnu.org/licenses/gpl-3.0.html>
  */
 
+use Cyberhouse\DoctrineORM\Database\CreateTablePrinter;
 use Cyberhouse\DoctrineORM\Database\IdentifierQuotes;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
@@ -137,6 +138,7 @@ class MigrationMerger
             ->getDatabasePlatform();
 
         $creates = [];
+        $printer = $this->objectManager->get(CreateTablePrinter::class);
 
         foreach ($this->schema->toSql($platform) as $statement) {
             if (StringUtility::beginsWith($statement, 'CREATE TABLE ')) {
@@ -146,7 +148,7 @@ class MigrationMerger
                     throw new \UnexpectedValueException('Several create statements for table ' . $name . ' present');
                 }
 
-                $creates[$name] = $statement;
+                $creates[$name] = $printer->getStatement($statement);
             }
         }
 
