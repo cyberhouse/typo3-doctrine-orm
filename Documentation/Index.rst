@@ -37,11 +37,10 @@ Doctrine ORM for TYPO3
 	**Table of Contents**
 
 .. toctree::
-
-.. include:: ../Readme.rst
-
-.. toctree::
     :hidden:
 
     Setup
-    Modelling
+    Usage
+    Integrations
+
+.. include:: ../Readme.rst

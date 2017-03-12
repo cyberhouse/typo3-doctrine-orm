@@ -19,17 +19,20 @@ Usage
 Using this package requires two steps:
 
 1. Register your extension model classes path and configure extbase two use alternate implementations for various objects.
-   This is explained in `Setup`_
 2. Create a domain model with the classes of this package as a base instead the default once.
-   Details and examples can be found in `Modelling`_
 
-.. _Setup: Setup
-.. _Modelling: Modelling
+See the following documentation chapters for details on either.
+
+Development
+-----------
+
+This extension is developed and maintained publicly on `github.com/cyberhouse/typo3-doctrine-orm`_
+
+.. _github.com/cyberhouse/typo3-doctrine-orm: https://github.com/cyberhouse/typo3-doctrine-orm
 
 License
 -------
 
-This package is licensed under the GPL v3. Please see the file `License.rst`_ or the official `FSF GPL Website`_.
+This package is licensed under the GPL v3. Please see the file *Documentation/License.rst* or the official `FSF GPL Website`_.
 
-.. _License.rst: :doc: Documentation/License.rst
 .. _FSF GPL Website: https://www.gnu.org/licenses/gpl-3.0.html
