@@ -57,7 +57,7 @@ abstract class DoctrineCommand extends Command
             'dry-run',
             'd',
             InputOption::VALUE_OPTIONAL,
-            'Print SQL statements to be executed instead of running them',
+            'Print actions to be executed instead of running them',
             false
         );
     }

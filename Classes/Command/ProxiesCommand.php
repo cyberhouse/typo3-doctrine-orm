@@ -39,12 +39,19 @@ class ProxiesCommand extends DoctrineCommand
             if (!$this->dryRun) {
                 GeneralUtility::mkdir_deep($destDir);
                 $em->getProxyFactory()->generateProxyClasses($metadatas, $destDir);
+                $output->write("<info>Done</info>\n");
+            } else {
+                $output->write("<info>Dry run, skipping</info>\n");
             }
 
-            $output->write("<info>Done</info>\n");
+            if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE || $this->dryRun) {
+                if ($this->dryRun) {
+                    $prefix = 'Would have generated ';
+                } else {
+                    $prefix = 'Generated ';
+                }
 
-            if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE) {
-                $output->writeln('Generated proxies for ' . count($metadatas) . ' entities:');
+                $output->writeln($prefix . count($metadatas) . ' proxies:');
 
                 foreach ($metadatas as $metadata) {
                     $output->writeln($metadata->name);
