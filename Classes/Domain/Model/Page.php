@@ -46,73 +46,73 @@ abstract class Page extends AbstractDoctrineEntity
     private $title;
 
     /**
-     * @ORM\Column(name="t3ver_oid", type="integer", nullable=true)
+     * @ORM\Column(name="t3ver_oid", type="integer", columnDefinition="int(11) unsigned DEFAULT 0 NOT NULL")
      * @var int
      */
     private $versionOverlayUid = 0;
 
     /**
-     * @ORM\Column(name="t3ver_id", type="integer", nullable=true)
+     * @ORM\Column(name="t3ver_id", type="integer", columnDefinition="int(11) unsigned DEFAULT 0 NOT NULL")
      * @var int
      */
     private $versionUid = 0;
 
     /**
-     * @ORM\Column(name="t3ver_wsid", type="integer", nullable=true)
+     * @ORM\Column(name="t3ver_wsid", type="integer", columnDefinition="int(11) unsigned DEFAULT 0 NOT NULL")
      * @var int
      */
     private $versionWorkspaceUid = 0;
 
     /**
-     * @ORM\Column(name="t3ver_state", type="smallint", nullable=true)
+     * @ORM\Column(name="t3ver_state", type="smallint", columnDefinition="int(11) unsigned DEFAULT 0 NOT NULL")
      * @var int
      */
     private $versionState = 0;
 
     /**
-     * @ORM\Column(name="t3ver_stage", type="integer", nullable=true)
+     * @ORM\Column(name="t3ver_stage", type="integer", columnDefinition="int(11) unsigned DEFAULT 0 NOT NULL")
      * @var int
      */
     private $versionStage = 0;
 
     /**
-     * @ORM\Column(name="t3ver_label", type="string", nullable=true)
+     * @ORM\Column(name="t3ver_label", type="string", columnDefinition="int(11) unsigned DEFAULT 0 NOT NULL")
      * @var string
      */
     private $versionLabel = '';
 
     /**
-     * @ORM\Column(name="t3ver_count", type="integer", nullable=true)
+     * @ORM\Column(name="t3ver_count", type="integer", columnDefinition="int(11) unsigned DEFAULT 0 NOT NULL")
      * @var int
      */
     private $versionCount = 0;
 
     /**
-     * @ORM\Column(name="t3ver_tstamp", type="integer", nullable=true)
+     * @ORM\Column(name="t3ver_tstamp", type="integer", columnDefinition="int(11) unsigned DEFAULT 0 NOT NULL")
      * @var int
      */
     private $versionLastModified = 0;
 
     /**
-     * @ORM\Column(name="t3ver_move_id", type="integer", nullable=true)
+     * @ORM\Column(name="t3ver_move_id", type="integer", columnDefinition="int(11) unsigned DEFAULT 0 NOT NULL")
      * @var int
      */
     private $versionMoveUid = 0;
 
     /**
-     * @ORM\Column(name="t3_origuid", type="integer", nullable=true)
+     * @ORM\Column(name="t3_origuid", type="integer", columnDefinition="int(11) unsigned DEFAULT 0 NOT NULL")
      * @var int
      */
     private $versionOriginalUid = 0;
 
     /**
-     * @ORM\Column(name="tstamp", type="integer", nullable=true)
+     * @ORM\Column(name="tstamp", type="integer", columnDefinition="int(11) unsigned DEFAULT 0 NOT NULL")
      * @var int
      */
     private $lastModified = 0;
 
     /**
-     * @ORM\Column(name="sorting", type="integer", nullable=true)
+     * @ORM\Column(name="sorting", type="integer", columnDefinition="int(11) unsigned DEFAULT 0 NOT NULL")
      * @var int
      */
     private $sorting = 0;
