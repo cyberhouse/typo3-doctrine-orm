@@ -71,4 +71,9 @@ abstract class AbstractDoctrineEntity extends AbstractDomainObject
         $this->pid = $pid;
         return $this;
     }
+
+    public function _isDirty($propertyName = null)
+    {
+        return false;
+    }
 }
