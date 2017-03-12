@@ -30,14 +30,19 @@ class CreateTablePrinter
         $this->quotes = GeneralUtility::makeInstance(IdentifierQuotes::class);
     }
 
-    public function getStatement(string $src): string
+    public function getStatement(string $src, bool $withComment = true): string
     {
         $pos = strpos($src, '(');
         $table = $this->quotes->remove(substr($src, 13, $pos - 13));
 
-        $target[] = '#';
-        $target[] = '# Table structure for table \'' . $table . '\'';
-        $target[] = '#';
+        $target = [];
+
+        if ($withComment) {
+            $target[] = '#';
+            $target[] = '# Table structure for table \'' . $table . '\'';
+            $target[] = '#';
+        }
+
         $target[] = 'CREATE TABLE ' . $table . ' (';
 
         $inBraces = false;

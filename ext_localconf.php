@@ -23,6 +23,10 @@ call_user_func(function () {
 
     if (empty($caches['doctrine_orm']['backend'])) {
         $caches['doctrine_orm']['backend'] = \TYPO3\CMS\Core\Cache\Backend\SimpleFileBackend::class;
+
+        if (!empty($caches['doctrine_orm']['options'])) {
+            $caches['doctrine_orm']['options'] = [];
+        }
     }
 
     if (empty($caches['doctrine_orm']['groups'])) {
@@ -31,7 +35,7 @@ call_user_func(function () {
 
     $defaultConfiguration = [
         'devMode'  => !\TYPO3\CMS\Core\Utility\GeneralUtility::getApplicationContext()->isProduction(),
-        'proxyDir' => PATH_site . 'typo3temp/var/doctrine_orm/proxies',
+        'proxyDir' => PATH_site . 'typo3temp/var/doctrine_proxies',
     ];
 
     if (empty($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['doctrine_orm'])) {

@@ -148,7 +148,7 @@ class MigrationMerger
                     throw new \UnexpectedValueException('Several create statements for table ' . $name . ' present');
                 }
 
-                $creates[$name] = $printer->getStatement($statement);
+                $creates[$name] = $printer->getStatement($statement, false);
             }
         }
 
