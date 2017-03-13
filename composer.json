@@ -1,6 +1,6 @@
 {
   "name": "cyberhouse/typo3-doctrine-orm",
-  "description": "Extbase and TCA integration of Doctrine ORM for TYPO3 8+",
+  "description": "Provides Extbase integration for Doctrine ORM for TYPO3 8+",
   "type": "typo3-cms-extension",
   "license": "GPL-3.0",
   "authors": [
