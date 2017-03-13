@@ -11,6 +11,7 @@ namespace Cyberhouse\DoctrineORM\Utility;
  * <https://www.gnu.org/licenses/gpl-3.0.html>
  */
 
+use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -57,15 +58,19 @@ class EntityManagerFactory implements SingletonInterface
             $paths = $this->registry->getExtensionPaths($extKey);
             $paths[] = ExtensionManagementUtility::extPath('doctrine_orm') . 'Classes/Domain/Model';
 
-            if ($this->cacheManager->hasCache($extKey . '_orm')) {
-                $cache = $this->cacheManager->getCache($extKey . '_orm');
+            if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['doctrine_orm']['devMode']) {
+                $cache = new ArrayCache();
             } else {
-                if (!$this->cacheManager->hasCache('doctrine_orm')) {
-                    $config = $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations'];
-                    $this->cacheManager->setCacheConfigurations($config);
-                }
+                if ($this->cacheManager->hasCache($extKey . '_orm')) {
+                    $cache = $this->cacheManager->getCache($extKey . '_orm');
+                } else {
+                    if (!$this->cacheManager->hasCache('doctrine_orm')) {
+                        $config = $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations'];
+                        $this->cacheManager->setCacheConfigurations($config);
+                    }
 
-                $cache = $this->cacheManager->getCache('doctrine_orm');
+                    $cache = $this->cacheManager->getCache('doctrine_orm');
+                }
             }
 
             $proxiesDir = rtrim($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['doctrine_orm']['proxyDir'], '/') . '/';

@@ -41,7 +41,7 @@ class EntityManagerFactoryTest extends BaseTestCase
         $paths = [__DIR__];
         $extKey = 'my_ext';
         $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['doctrine_orm'] = [
-            'devMode'  => true,
+            'devMode'  => false,
             'proxyDir' => sys_get_temp_dir()
         ];
 
