@@ -7,7 +7,6 @@ Using this extension requires two steps of configuration:
 1. Register the models of your extension
 2. Configure alternate interface implementations for extbase
 
-
 Configure extension
 ===================
 

@@ -11,7 +11,7 @@ Configuration of entities is done using the `AnnotationDriver`_ of Doctrine. For
 Entities / Domain Models
 ========================
 
-When creating a mode, extend the class ``Cyberhouse\DoctrineORM\Domain\Model\AbstractDoctrineEntity``. The recommendations and best practices of naming tables in TYPO3 extensions apply as well.
+When creating a model, extend the class ``Cyberhouse\DoctrineORM\Domain\Model\AbstractDoctrineEntity``. The recommendations and best practices of naming tables in TYPO3 extensions apply as well.
 
 A simple ``Task`` model of a Todo list could look like this:
 
@@ -36,7 +36,7 @@ A simple ``Task`` model of a Todo list could look like this:
         private $name;
     }
 
-All data types supported by Doctrine may be used. If the model contains a TCA declaration and can be edited via TCEforms in the TYPO3 backend, the annotation ``@ORM\Column(columnDefinition="")`` might be required to ensure a field configuration that is compatible with the FormEngine.
+All data types supported by Doctrine may be used. If the model contains a TCA declaration and can be edited via TCEforms in the TYPO3 backend, the annotation ``@ORM\Column(columnDefinition="")`` might be useful to ensure a field configuration that is compatible with the FormEngine.
 
 Repositories
 ============

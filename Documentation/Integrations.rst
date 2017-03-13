@@ -14,13 +14,13 @@ There are two entry points for migrating the database schema to the current doma
 Install Tool
 ------------
 
-doctrine_orm injects all ``CREATE TABLE`` statements of the entites into the result of the SqlReader, used by the install tool and others, like the `typo3-console`_ utility.
+doctrine_orm injects all ``CREATE TABLE`` statements of the entites into the result of the SqlReader, used by the install tool and others, like the `typo3-console`_ package.
 
 .. _typo3-console: https://github.com/TYPO3-Console/typo3_console
 
-While this is convinient and sufficient in most cases, there are two limitations to be considered:
+While this is convinient and sufficient in most cases, there are two limitations that must be kept in mind:
 
-1. Doctrine ORM creates FOREIGN KEY constraints. The way these are defined is, currently, not understood by TYPO3. So they are left out.
+1. Doctrine ORM creates FOREIGN KEY constraints. The way these are defined is, currently at least, not supported by TYPO3. So they are left out.
 2. The schema of TYPO3 and other extensions is merged with the one of the Doctrine domain model. For better compatibility, the former take precedence. So if a domain model uses a TYPO3 table (like *pages*), the definition in the ext_tables.sql file is used.
 
 CLI Commands
@@ -68,7 +68,7 @@ doctrine_orm integrates two more settings:
 Application Context
 -------------------
 
-Doctrine ORM has the so called ``devMode`` which affects the configuration factor. doctrine_orm automatically enables it if the TYPO3 context is not Development. This means:
+The Doctrine ORM configuration factory has the so called ``devMode`` - switch. doctrine_orm automatically enables it if the TYPO3 context is not Development. This means:
 
 In Development context, regardless of a possible sub-context, all caching is done in-memory, runtime only, using an ArrayCache and proxy classes are generated on demand.
 
