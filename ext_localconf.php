@@ -18,7 +18,7 @@ call_user_func(function () {
     }
 
     if (empty($caches['doctrine_orm']['frontend'])) {
-        $caches['doctrine_orm']['frontend'] = \Cyberhouse\DoctrineORM\Frontend\DoctrineCapableFrontend::class;
+        $caches['doctrine_orm']['frontend'] = \Cyberhouse\DoctrineORM\Cache\DoctrineCapableFrontend::class;
     }
 
     if (empty($caches['doctrine_orm']['backend'])) {

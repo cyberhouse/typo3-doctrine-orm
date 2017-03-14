@@ -1,5 +1,5 @@
 <?php
-namespace Cyberhouse\DoctrineORM\Frontend;
+namespace Cyberhouse\DoctrineORM\Cache;
 
 /*
  * This file is (c) 2017 by Cyberhouse GmbH
