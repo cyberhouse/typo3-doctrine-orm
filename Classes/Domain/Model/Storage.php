@@ -23,19 +23,19 @@ use Doctrine\ORM\Mapping as ORM;
 class Storage extends AbstractDoctrineEntity
 {
     /**
-     * @ORM\Column(name="tstamp", type="integer")
+     * @ORM\Column(name="tstamp", type="integer", columnDefinition="int(11) unsigned DEFAULT 0 NOT NULL")
      * @var int
      */
     private $lastModified = 0;
 
     /**
-     * @ORM\Column(name="crdate", type="integer")
+     * @ORM\Column(name="crdate", type="integer", columnDefinition="int(11) unsigned DEFAULT 0 NOT NULL")
      * @var int
      */
     private $createdDate = 0;
 
     /**
-     * @ORM\Column(name="cruser_id", type="integer")
+     * @ORM\Column(name="cruser_id", type="integer", columnDefinition="int(11) unsigned DEFAULT 0 NOT NULL")
      * @var int
      */
     private $createdBy = 0;
