@@ -73,9 +73,15 @@ class CreateTablePrinter
         }
 
         if (strlen($buffer) > 1) {
-            $target[] = '  ' . trim(substr($buffer, 0, -1));
+            $target[] = '  ' . trim(rtrim($buffer, ' ;'));
         }
 
-        return implode(LF, $target) . LF . ');' . LF;
+        $sql = implode(LF, $target) . ';';
+
+        if (substr($sql, -2) === ');') {
+            $sql = substr($sql, 0, -2) . LF . ');';
+        }
+
+        return $sql . LF;
     }
 }

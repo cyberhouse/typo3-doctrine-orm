@@ -175,15 +175,21 @@ class MigrationMerger
         /** @var Table $table */
         foreach ([$a, $b] as $table) {
             foreach ($table->getColumns() as $column) {
-                $data['columns'][$this->quotes->remove($column->getName())] = $column;
+                if (!isset($data['columns'][$this->quotes->remove($column->getName())])) {
+                    $data['columns'][$this->quotes->remove($column->getName())] = $column;
+                }
             }
 
             foreach ($table->getIndexes() as $index) {
-                $data['indexes'][$this->quotes->remove($index->getName())] = $index;
+                if (!isset($data['indexes'][$this->quotes->remove($index->getName())])) {
+                    $data['indexes'][$this->quotes->remove($index->getName())] = $index;
+                }
             }
 
             foreach ($table->getForeignKeys() as $fk) {
-                $data['fkConstraints'][$this->quotes->remove($fk->getName())] = $fk;
+                if (!isset($data['fkConstraints'][$this->quotes->remove($fk->getName())])) {
+                    $data['fkConstraints'][$this->quotes->remove($fk->getName())] = $fk;
+                }
             }
         }
 
