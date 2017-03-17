@@ -11,10 +11,10 @@ namespace Cyberhouse\DoctrineORM\Persistence;
  * <https://www.gnu.org/licenses/gpl-3.0.html>
  */
 
-use Cyberhouse\DoctrineORM\Domain\Model\AbstractDoctrineEntity;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Persistence\Generic\Exception\NotImplementedException;
-use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
+use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 
 /**
@@ -23,7 +23,7 @@ use TYPO3\CMS\Extbase\Persistence\QueryInterface;
  *
  * @author Georg Großberger <georg.grossberger@cyberhouse.at>
  */
-class DoctrinePersistenceManager implements PersistenceManagerInterface
+class DoctrinePersistenceManager extends PersistenceManager
 {
     /**
      * @inject
@@ -49,32 +49,40 @@ class DoctrinePersistenceManager implements PersistenceManagerInterface
 
     public function persistAll()
     {
-        $em = $this->getEntityManager();
+        try {
+            $em = $this->getEntityManager();
 
-        if ($em->isOpen()) {
-            $em->transactional(function () {
-                // noop
-            });
+            if ($em->isOpen()) {
+                $em->transactional(function () {
+                    // noop
+                });
+            }
+            $this->em = null;
+            $this->factory->reset($this->currentContext);
+        } catch (\UnexpectedValueException $ignored) {
+            parent::persistAll();
         }
-        $this->em = null;
-        $this->factory->reset($this->currentContext);
     }
 
     public function clearState()
     {
-        $this->getEntityManager()->clear();
+        try {
+            $this->getEntityManager()->clear();
+        } catch (\UnexpectedValueException $ignored) {
+            parent::clearState();
+        }
     }
 
     public function isNewObject($object)
     {
-        return !($object instanceof AbstractDoctrineEntity && $object->getUid() > 0);
+        return !($object instanceof AbstractEntity && $object->getUid() > 0);
     }
 
     public function getIdentifierByObject($object)
     {
         $id = null;
 
-        if ($object instanceof AbstractDoctrineEntity) {
+        if ($object instanceof AbstractEntity) {
             $id = $object->getUid();
         }
 
@@ -83,7 +91,11 @@ class DoctrinePersistenceManager implements PersistenceManagerInterface
 
     public function getObjectByIdentifier($identifier, $objectType = null, $useLazyLoading = false)
     {
-        return $this->getEntityManager()->find($objectType, $identifier);
+        try {
+            return $this->getEntityManager()->find($objectType, $identifier);
+        } catch (\UnexpectedValueException $ignored) {
+            return parent::getObjectByIdentifier($identifier, $objectType, $useLazyLoading);
+        }
     }
 
     public function getObjectCountByQuery(QueryInterface $query)
@@ -96,60 +108,40 @@ class DoctrinePersistenceManager implements PersistenceManagerInterface
         return $query->execute(true);
     }
 
-    public function registerRepositoryClassName($className)
-    {
-    }
-
     public function add($object)
     {
-        $this->em->persist($object);
+        try {
+            $this->getEntityManager()->persist($object);
+        } catch (\UnexpectedValueException $ignored) {
+            parent::add($object);
+        }
     }
 
     public function remove($object)
     {
-        $this->em->remove($object);
+        try {
+            $this->getEntityManager()->remove($object);
+        } catch (\UnexpectedValueException $ignored) {
+            parent::remove($object);
+        }
     }
 
     public function update($object)
     {
-        $this->em->persist($object);
-    }
-
-    public function injectSettings(array $settings)
-    {
-    }
-
-    /**
-     * Converts the given object into an array containing the identity of the domain object.
-     *
-     * @param object $object The object to be converted
-     * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception\NotImplementedException
-     * @return array
-     * @api
-     */
-    public function convertObjectToIdentityArray($object)
-    {
-        throw new NotImplementedException(__METHOD__, 1476108103);
-    }
-
-    /**
-     * Recursively iterates through the given array and turns objects
-     * into arrays containing the identity of the domain object.
-     *
-     * @param array $array The array to be iterated over
-     * @throws \TYPO3\CMS\Extbase\Persistence\Generic\Exception\NotImplementedException
-     * @return array
-     * @api
-     * @see convertObjectToIdentityArray()
-     */
-    public function convertObjectsToIdentityArrays(array $array)
-    {
-        throw new NotImplementedException(__METHOD__, 1476108111);
+        try {
+            $this->getEntityManager()->persist($object);
+        } catch (\UnexpectedValueException $ignored) {
+            parent::update($object);
+        }
     }
 
     public function createQueryForType($type)
     {
-        return new DoctrineQuery($this->em, $type);
+        try {
+            return GeneralUtility::makeInstance(DoctrineQuery::class, $this->getEntityManager(), $type);
+        } catch (\UnexpectedValueException $ignored) {
+            return parent::createQueryForType($type);
+        }
     }
 
     /**
@@ -159,7 +151,7 @@ class DoctrinePersistenceManager implements PersistenceManagerInterface
     {
         if (!$this->em) {
             $conf = $this->configuration->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
-            $this->currentContext = $conf['extensionName'];
+            $this->currentContext = GeneralUtility::camelCaseToLowerCaseUnderscored($conf['extensionName']);
             $this->em = $this->factory->get($this->currentContext);
         }
         return $this->em;
