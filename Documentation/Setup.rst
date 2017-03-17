@@ -39,31 +39,18 @@ When using Doctrine ORM, we need alternate implementations, so add the following
 
 .. code-block:: typoscript
 
-   plugin.tx_myext {
-       settings {} # The well known settings array
-       objects {
-           Cyberhouse\DoctrineORM\Persistence\DoctrinePersistenceManager {
-               implements = TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface
-           }
-           Cyberhouse\DoctrineORM\Persistence\DoctrineQuery {
-               implements = TYPO3\CMS\Extbase\Persistence\QueryInterface
-           }
-           Cyberhouse\DoctrineORM\Persistence\DoctrineQueryResult {
-               implements = TYPO3\CMS\Extbase\Persistence\QueryResultInterface
-           }
+   config.tx_extbase {
+     objects {
+       TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface {
+         className = Cyberhouse\DoctrineORM\Persistence\DoctrinePersistenceManager
        }
+       # The Bootstrap class for extbase plugins asks for this class 
+       # explicitly, so we need to set an implementation for an implementation
+       # That's basically an "extbase - XClass"
+       TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager {
+         className = Cyberhouse\DoctrineORM\Persistence\DoctrinePersistenceManager
+       }
+     }
    }
 
-For a backend module use ``module.`` instead
-
-.. code-block:: typoscript
-
-   module.tx_myext.objects {
-      # Same options as above
-   }
-   # If you already have a plugin configured, simply copy its options
-   module.tx_myext.objects < plugin.tx_myext.objects
-
-.. important::
-   The ``objects.`` directives are more commonly known in the context of ``config.tx_extbase.``. Do not set them
-   there as this would break all plugins and modules that need the core functionality.
+For extensions not registering at the ExtensionRegistry, every call to an interface function is passed through to the core PersistenceManager
