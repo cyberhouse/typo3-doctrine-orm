@@ -93,6 +93,12 @@ class DoctrineCapableFrontend extends VariableFrontend implements Cache
      */
     private function fixKey($key)
     {
-        return preg_replace('/[^a-zA-Z0-9_%\\-&]+/', '%', $key);
+        $fixed = preg_replace('/[^a-zA-Z0-9_%\\-&]+/', '-', $key);
+
+        if (strlen($fixed) > 250) {
+            return substr($fixed, 0, 250);
+        }
+
+        return $fixed;
     }
 }
