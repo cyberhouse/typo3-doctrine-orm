@@ -46,7 +46,7 @@ class EntityManagerFactory implements SingletonInterface
     /**
      * @var array|[]EntityManager
      */
-    private $known = [];
+    protected $known = [];
 
     /**
      * @param string $extKey

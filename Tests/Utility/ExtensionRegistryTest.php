@@ -46,12 +46,39 @@ class ExtensionRegistryTest extends TestCase
         $this->assertSame($expected, $actual);
     }
 
+    public function testDefaultPathIsUsedIfNoneGiven()
+    {
+        $extKey = 'my_ext';
+        $expected = [$extKey => ['EXT:' . $extKey . '/Classes/Domain/Model']];
+
+        $registry = new ExtensionRegistry();
+        $registry->register($extKey);
+
+        $property = (new \ReflectionObject($registry))->getProperty('registered');
+        $property->setAccessible(true);
+        $actual = $property->getValue($registry);
+
+        $this->assertSame($expected, $actual);
+    }
+
     public function testNoValidPathsRaiseException()
     {
         $this->expectException(\UnexpectedValueException::class);
 
         $registry = new ExtensionRegistry();
-        $registry->register('doctrine_orm', 'no', 'path');
+        $registry->register('doctrine_orm', 'EXT:no_ext/this/does/not/exist');
         $registry->getExtensionPaths('doctrine_orm');
+    }
+
+    public function testGetRegisteredExtensionList()
+    {
+        $ext1 = 'my_ext';
+        $ext2 = 'my_better_ext';
+
+        $registry = new ExtensionRegistry();
+        $registry->register($ext1);
+        $registry->register($ext2);
+
+        $this->assertSame([$ext1, $ext2], $registry->getRegisteredExtensions());
     }
 }
