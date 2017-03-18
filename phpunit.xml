@@ -27,6 +27,7 @@
             <exclude>
                 <directory suffix=".php">Classes/Domain/Model/</directory>
                 <directory suffix=".php">Classes/Domain/Traits/</directory>
+                <directory suffix=".php">Classes/Command/</directory>
             </exclude>
         </whitelist>
     </filter>
