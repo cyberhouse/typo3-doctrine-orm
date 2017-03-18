@@ -92,4 +92,17 @@ class DoctrineCapableFrontendTest extends \PHPUnit_Framework_TestCase
             $this->fail($ex->getMessage());
         }
     }
+
+    public function testStatsDoesNotDoAnything()
+    {
+        $backend = $this->getMockBuilder(TransientMemoryBackend::class)->disableOriginalConstructor()->getMock();
+        $cache = new DoctrineCapableFrontend('doctrine', $backend);
+
+        $backend->expects($this->never())->method('set');
+        $backend->expects($this->never())->method('get');
+        $backend->expects($this->never())->method('has');
+        $backend->expects($this->never())->method('remove');
+
+        $this->assertNull($cache->getStats());
+    }
 }

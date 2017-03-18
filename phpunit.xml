@@ -1,4 +1,7 @@
-<phpunit backupGlobals="true"
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/5.7/phpunit.xsd"
+         backupGlobals="true"
          backupStaticAttributes="false"
          bootstrap="vendor/autoload.php"
          colors="true"
@@ -17,4 +20,14 @@
             <directory>Tests/</directory>
         </testsuite>
     </testsuites>
+
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">Classes/</directory>
+            <exclude>
+                <directory suffix=".php">Classes/Domain/Model/</directory>
+                <directory suffix=".php">Classes/Domain/Traits/</directory>
+            </exclude>
+        </whitelist>
+    </filter>
 </phpunit>
