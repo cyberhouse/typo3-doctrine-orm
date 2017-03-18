@@ -21,11 +21,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class MigrateCommand extends DoctrineCommand
 {
-    /**
-     * @var bool
-     */
-    private $dryRun = false;
-
     protected function configure()
     {
         parent::configure();
