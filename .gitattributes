@@ -1,0 +1,11 @@
+/.editorconfig export-ignore
+/.gitattributes export-ignore
+/.php_cs export-ignore
+/dynamicReturnTypeMeta.json export-ignore
+/Makefile export-ignore
+/phpunit.xml export-ignore
+/Tests/ export-ignore
+
+*.json text eol=lf
+*.php text eol=lf
+*.rst text eol=lf
