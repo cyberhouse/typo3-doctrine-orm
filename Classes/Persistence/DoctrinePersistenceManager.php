@@ -14,7 +14,10 @@ namespace Cyberhouse\DoctrineORM\Persistence;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
+use TYPO3\CMS\Extbase\Object\Container\Container;
+use TYPO3\CMS\Extbase\Persistence\Generic\Exception\NotImplementedException;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
+use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 
 /**
@@ -23,7 +26,7 @@ use TYPO3\CMS\Extbase\Persistence\QueryInterface;
  *
  * @author Georg Großberger <georg.grossberger@cyberhouse.at>
  */
-class DoctrinePersistenceManager extends PersistenceManager
+class DoctrinePersistenceManager implements PersistenceManagerInterface
 {
     /**
      * @inject
@@ -49,28 +52,30 @@ class DoctrinePersistenceManager extends PersistenceManager
 
     public function persistAll()
     {
-        try {
-            $em = $this->getEntityManager();
+        $em = $this->getEntityManager();
 
-            if ($em->isOpen()) {
-                $em->transactional(function () {
-                    // noop
-                });
-            }
-            $this->em = null;
-            $this->factory->reset($this->currentContext);
-        } catch (\UnexpectedValueException $ignored) {
-            parent::persistAll();
+        if ($em->isOpen()) {
+            $em->flush();
+            $em->close();
         }
+
+        $this->em = null;
+        $this->factory->reset($this->currentContext);
+
+        // Ugly woraround for extbase bug
+        // It does not reset implementations after a run, so we need to do this ourselves
+        // @todo: Remove this, once it is fixed in the core
+        GeneralUtility::makeInstance(Container::class)->registerImplementation(
+            PersistenceManagerInterface::class,
+            PersistenceManager::class
+        );
     }
 
     public function clearState()
     {
-        try {
-            $this->getEntityManager()->clear();
-        } catch (\UnexpectedValueException $ignored) {
-            parent::clearState();
-        }
+        $this->getEntityManager()->clear();
+        $this->factory->reset($this->currentContext);
+        $this->em = null;
     }
 
     public function isNewObject($object)
@@ -91,11 +96,7 @@ class DoctrinePersistenceManager extends PersistenceManager
 
     public function getObjectByIdentifier($identifier, $objectType = null, $useLazyLoading = false)
     {
-        try {
-            return $this->getEntityManager()->find($objectType, $identifier);
-        } catch (\UnexpectedValueException $ignored) {
-            return parent::getObjectByIdentifier($identifier, $objectType, $useLazyLoading);
-        }
+        return $this->getEntityManager()->find($objectType, $identifier);
     }
 
     public function getObjectCountByQuery(QueryInterface $query)
@@ -110,38 +111,42 @@ class DoctrinePersistenceManager extends PersistenceManager
 
     public function add($object)
     {
-        try {
-            $this->getEntityManager()->persist($object);
-        } catch (\UnexpectedValueException $ignored) {
-            parent::add($object);
-        }
+        $this->getEntityManager()->persist($object);
     }
 
     public function remove($object)
     {
-        try {
-            $this->getEntityManager()->remove($object);
-        } catch (\UnexpectedValueException $ignored) {
-            parent::remove($object);
-        }
+        $this->getEntityManager()->remove($object);
     }
 
     public function update($object)
     {
-        try {
-            $this->getEntityManager()->persist($object);
-        } catch (\UnexpectedValueException $ignored) {
-            parent::update($object);
-        }
+        $this->getEntityManager()->persist($object);
     }
 
     public function createQueryForType($type)
     {
-        try {
-            return GeneralUtility::makeInstance(DoctrineQuery::class, $this->getEntityManager(), $type);
-        } catch (\UnexpectedValueException $ignored) {
-            return parent::createQueryForType($type);
-        }
+        return GeneralUtility::makeInstance(DoctrineQuery::class, $this->getEntityManager(), $type);
+    }
+
+    public function registerRepositoryClassName($className)
+    {
+        throw new NotImplementedException('Not supported');
+    }
+
+    public function injectSettings(array $settings)
+    {
+        // noop, simply ignore any calls
+    }
+
+    public function convertObjectToIdentityArray($object)
+    {
+        throw new NotImplementedException('Not supported');
+    }
+
+    public function convertObjectsToIdentityArrays(array $array)
+    {
+        throw new NotImplementedException('Not supported');
     }
 
     /**
