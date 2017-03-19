@@ -39,7 +39,7 @@ When using Doctrine ORM, we need alternate implementations, so add the following
 
 .. code-block:: typoscript
 
-   config.tx_extbase {
+   plugin.tx_myext {
      objects {
        TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface {
          className = Cyberhouse\DoctrineORM\Persistence\DoctrinePersistenceManager
@@ -53,4 +53,23 @@ When using Doctrine ORM, we need alternate implementations, so add the following
      }
    }
 
-For extensions not registering at the ExtensionRegistry, every call to an interface function is passed through to the core PersistenceManager
+For a module use the ``module.`` settings:
+
+.. code-block:: typoscript
+
+   module.tx_myext {
+     objects {
+       TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface {
+         className = Cyberhouse\DoctrineORM\Persistence\DoctrinePersistenceManager
+       }
+       TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager {
+         className = Cyberhouse\DoctrineORM\Persistence\DoctrinePersistenceManager
+       }
+     }
+   }
+
+.. warning::
+   
+   The ``objects.`` property is more commonly known in the context of the ``config.tx_extbase.`` settings.
+   Do not set it there as this would break all extensions relying on TYPO3s PersistenceManager implementation. 
+   It would even break some core modules, like the extension manager.

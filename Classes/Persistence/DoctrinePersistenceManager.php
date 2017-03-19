@@ -14,9 +14,7 @@ namespace Cyberhouse\DoctrineORM\Persistence;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
-use TYPO3\CMS\Extbase\Object\Container\Container;
 use TYPO3\CMS\Extbase\Persistence\Generic\Exception\NotImplementedException;
-use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 
@@ -61,14 +59,6 @@ class DoctrinePersistenceManager implements PersistenceManagerInterface
 
         $this->em = null;
         $this->factory->reset($this->currentContext);
-
-        // Ugly woraround for extbase bug
-        // It does not reset implementations after a run, so we need to do this ourselves
-        // @todo: Remove this, once it is fixed in the core
-        GeneralUtility::makeInstance(Container::class)->registerImplementation(
-            PersistenceManagerInterface::class,
-            PersistenceManager::class
-        );
     }
 
     public function clearState()
