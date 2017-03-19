@@ -70,9 +70,8 @@ Application Context
 
 The Doctrine ORM configuration factory has the so called ``devMode`` - switch. doctrine_orm automatically enables it if the TYPO3 context is not Development. This means:
 
-In Development context, regardless of a possible sub-context, all caching is done in-memory, runtime only, using an ArrayCache and proxy classes are generated on demand.
-
-In any other context, proxies must be present before running the code, and cached information is actually persistent.
+- In Development context, regardless of a possible sub-context, all caching is done in-memory, runtime only, using an ArrayCache and proxy classes are generated on demand.
+- In any other context, proxies must be present before running the code, and cached information is actually persistent.
 
 Caching
 -------
