@@ -11,8 +11,10 @@ namespace Cyberhouse\DoctrineORM\Domain\Repository;
  * <https://www.gnu.org/licenses/gpl-3.0.html>
  */
 
+use Cyberhouse\DoctrineORM\Persistence\DoctrineQuery;
 use Cyberhouse\DoctrineORM\Utility\EntityManagerFactory;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\ClassNamingUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Exception\NotImplementedException;
@@ -51,7 +53,13 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface, Single
      * @inject
      * @var \Cyberhouse\DoctrineORM\Utility\EntityManagerFactory
      */
-    private $factory;
+    protected $factory;
+
+    /**
+     * @inject
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
+     */
+    protected $objectManager;
 
     public function initializeObject()
     {
@@ -61,7 +69,7 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface, Single
         }
 
         if (empty($this->modelClassName)) {
-            $this->modelClassName = substr(str_replace('\\Repository\\', '\\Model\\', get_class($this)), 0, -10);
+            $this->modelClassName = ClassNamingUtility::translateRepositoryNameToModelName(get_class($this));
         }
 
         if (!$this->factory) {
@@ -122,9 +130,21 @@ abstract class AbstractDoctrineRepository implements RepositoryInterface, Single
     }
 
     /**
-     * @return \Doctrine\ORM\QueryBuilder
+     * @return DoctrineQuery
      */
     public function createQuery()
+    {
+        return $this->objectManager->get(
+            DoctrineQuery::class,
+            $this->getEntityManager(),
+            $this->modelClassName
+        );
+    }
+
+    /**
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function createOrmQuery()
     {
         return $this->getEntityManager()->createQueryBuilder();
     }
