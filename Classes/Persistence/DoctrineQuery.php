@@ -11,8 +11,10 @@ namespace Cyberhouse\DoctrineORM\Persistence;
  * <https://www.gnu.org/licenses/gpl-3.0.html>
  */
 
-use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\QueryBuilder;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Exception\NotImplementedException;
 use TYPO3\CMS\Extbase\Persistence\Generic\Qom\ConstraintInterface;
 use TYPO3\CMS\Extbase\Persistence\Generic\Qom\SourceInterface;
@@ -27,9 +29,14 @@ use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 class DoctrineQuery implements QueryInterface
 {
     /**
+     * @var ObjectManager
+     */
+    protected $objectManager;
+
+    /**
      * @var QueryBuilder
      */
-    private $qb;
+    private $queryBuilder;
 
     /**
      * @var string
@@ -45,18 +52,20 @@ class DoctrineQuery implements QueryInterface
     public function __construct(EntityManager $em, string $class)
     {
         $this->type = $class;
-        $this->qb = $em->createQueryBuilder();
+        $this->queryBuilder = $em->createQueryBuilder();
+        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
     }
 
     public function getSource()
     {
-        return $this->qb;
+        return $this->queryBuilder;
     }
 
     public function execute($returnRawQueryResult = false)
     {
-        return new DoctrineQueryResult(
-            $this->qb->select('e')->from($this->type, 'e')->getQuery(),
+        return $this->objectManager->get(
+            DoctrineQueryResult::class,
+            $this->queryBuilder->select('e')->from($this->type, 'e')->getQuery(),
             $returnRawQueryResult
         );
     }
@@ -64,24 +73,27 @@ class DoctrineQuery implements QueryInterface
     public function setOrderings(array $orderings)
     {
         foreach ($orderings as $field => $dir) {
-            $this->qb->addOrderBy($field, $dir);
+            $this->queryBuilder->addOrderBy($field, $dir);
         }
         return $this;
     }
 
     public function setLimit($limit)
     {
-        $this->qb->setMaxResults($limit);
+        $this->queryBuilder->setMaxResults($limit);
+        return $this;
     }
 
     public function setOffset($offset)
     {
-        $this->qb->setFirstResult($offset);
+        $this->queryBuilder->setFirstResult($offset);
+        return $this;
     }
 
     public function matching($constraint)
     {
-        $this->qb->where($constraint);
+        $this->queryBuilder->where($constraint);
+        return $this;
     }
 
     public function logicalAnd($constraint1)
@@ -90,7 +102,7 @@ class DoctrineQuery implements QueryInterface
             $constraint1 = func_get_args();
         }
 
-        return $this->qb->expr()->andX(...$constraint1);
+        return $this->queryBuilder->expr()->andX(...$constraint1);
     }
 
     public function logicalOr($constraint1)
@@ -99,7 +111,7 @@ class DoctrineQuery implements QueryInterface
             $constraint1 = func_get_args();
         }
 
-        return $this->qb->expr()->orX(...$constraint1);
+        return $this->queryBuilder->expr()->orX(...$constraint1);
     }
 
     public function logicalNot(ConstraintInterface $constraint)
@@ -109,83 +121,86 @@ class DoctrineQuery implements QueryInterface
 
     public function not($expr)
     {
-        return $this->qb->expr()->not($expr);
+        return $this->queryBuilder->expr()->not($expr);
     }
 
     public function equals($propertyName, $operand, $caseSensitive = true)
     {
-        return $this->qb->expr()->eq($propertyName, $operand);
+        return $this->queryBuilder->expr()->eq($propertyName, $operand);
     }
 
     public function like($propertyName, $operand, $caseSensitive = true)
     {
-        return $this->qb->expr()->like($propertyName, $operand);
+        return $this->queryBuilder->expr()->like($propertyName, $operand);
     }
 
     public function contains($propertyName, $operand)
     {
-        return $this->qb->expr()->isMemberOf($propertyName, $operand);
+        return $this->queryBuilder->expr()->isMemberOf($propertyName, $operand);
     }
 
     public function in($propertyName, $operand)
     {
-        return $this->qb->expr()->in($propertyName, $operand);
+        return $this->queryBuilder->expr()->in($propertyName, $operand);
     }
 
     public function lessThan($propertyName, $operand)
     {
-        return $this->qb->expr()->lt($propertyName, $operand);
+        return $this->queryBuilder->expr()->lt($propertyName, $operand);
     }
 
     public function lessThanOrEqual($propertyName, $operand)
     {
-        return $this->qb->expr()->lte($propertyName, $operand);
+        return $this->queryBuilder->expr()->lte($propertyName, $operand);
     }
 
     public function greaterThan($propertyName, $operand)
     {
-        return $this->qb->expr()->gt($propertyName, $operand);
+        return $this->queryBuilder->expr()->gt($propertyName, $operand);
     }
 
     public function greaterThanOrEqual($propertyName, $operand)
     {
-        return $this->qb->expr()->gte($propertyName, $operand);
+        return $this->queryBuilder->expr()->gte($propertyName, $operand);
     }
 
     public function getType()
     {
-        return $this->qb->getType();
+        return $this->type;
     }
 
     public function setQuerySettings(QuerySettingsInterface $querySettings)
     {
-        // Noop
+        throw new NotImplementedException('Doctrine ORM does not support query settings');
     }
 
     public function getQuerySettings()
     {
-        // Noop
+        throw new NotImplementedException('Doctrine ORM does not support query settings');
     }
 
     public function count()
     {
-        $qb = clone $this->qb;
-        return $qb->select('COUNT(e)')->from($this->type, 'e')->getQuery()->getSingleScalarResult();
+        return $this->getQueryBuilderCopy()
+            ->select('COUNT(e)')
+            ->from($this->type, 'e')
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     public function getOrderings()
     {
-        return [];
+        throw new NotImplementedException('Doctrine ORM does not support fetching orderings');
     }
 
     public function getLimit()
     {
-        return $this->qb->getMaxResults();
+        return $this->queryBuilder->getMaxResults();
     }
 
     public function getOffset()
     {
-        return $this->qb->getFirstResult();
+        return $this->queryBuilder->getFirstResult();
     }
 
     /**
@@ -193,7 +208,7 @@ class DoctrineQuery implements QueryInterface
      */
     public function getConstraint()
     {
-        return $this->qb->expr();
+        return $this->queryBuilder->expr();
     }
 
     /**
@@ -202,21 +217,25 @@ class DoctrineQuery implements QueryInterface
      */
     public function isEmpty($propertyName)
     {
-        return $this->logicalAnd([
-            $this->qb->expr()->isNotNull($propertyName),
-            $this->not($this->equals($propertyName, '')),
-            $this->not($this->equals($propertyName, 0)),
+        return $this->logicalOr([
+            $this->queryBuilder->expr()->isNull($propertyName),
+            $this->equals($propertyName, ''),
+            $this->equals($propertyName, 0),
         ]);
     }
 
     public function setSource(SourceInterface $source)
     {
-        // noop
+        throw new NotImplementedException('Doctrine ORM does not support settings a source');
     }
 
     public function getStatement()
     {
-        $qb = clone $this->qb;
-        return $qb->getSQL();
+        return $this->getQueryBuilderCopy()->getDQL();
+    }
+
+    protected function getQueryBuilderCopy()
+    {
+        return clone $this->queryBuilder;
     }
 }

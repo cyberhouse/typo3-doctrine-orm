@@ -11,6 +11,7 @@ namespace Cyberhouse\DoctrineORM\Persistence;
  * <https://www.gnu.org/licenses/gpl-3.0.html>
  */
 
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Query;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 
@@ -37,18 +38,24 @@ class DoctrineQueryResult implements QueryResultInterface
     private $pointer = 0;
 
     /**
+     * @var int
+     */
+    private $hydrationMode = 0;
+
+    /**
      * DoctrineQueryResult constructor.
-     * @param \Doctrine\ORM\Query $query
+     * @param AbstractQuery $query
      * @param bool $useRaw
      */
-    public function __construct(Query $query, bool $useRaw)
+    public function __construct(AbstractQuery $query, bool $useRaw)
     {
         $this->query = $query;
-        $this->result = $query->getResult($useRaw ? Query::HYDRATE_ARRAY : Query::HYDRATE_OBJECT);
+        $this->hydrationMode = $useRaw ? AbstractQuery::HYDRATE_ARRAY : AbstractQuery::HYDRATE_OBJECT;
     }
 
     public function current()
     {
+        $this->init();
         return $this->result[$this->pointer];
     }
 
@@ -64,7 +71,8 @@ class DoctrineQueryResult implements QueryResultInterface
 
     public function valid()
     {
-        return count($this->result) < $this->pointer;
+        $this->init();
+        return count($this->result) > $this->pointer;
     }
 
     public function rewind()
@@ -74,21 +82,25 @@ class DoctrineQueryResult implements QueryResultInterface
 
     public function offsetExists($offset)
     {
+        $this->init();
         return isset($this->result[$offset]);
     }
 
     public function offsetGet($offset)
     {
+        $this->init();
         return $this->result[$offset];
     }
 
     public function offsetSet($offset, $value)
     {
+        $this->init();
         $this->result[$offset] = $value;
     }
 
     public function offsetUnset($offset)
     {
+        $this->init();
         unset($this->result[$offset]);
     }
 
@@ -99,16 +111,26 @@ class DoctrineQueryResult implements QueryResultInterface
 
     public function getFirst()
     {
+        $this->init();
         return $this->result[0];
     }
 
     public function toArray()
     {
+        $this->init();
         return $this->result;
     }
 
     public function count()
     {
+        $this->init();
         return count($this->result);
+    }
+
+    protected function init()
+    {
+        if (!is_array($this->result)) {
+            $this->result = $this->query->getResult($this->hydrationMode);
+        }
     }
 }
