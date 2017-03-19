@@ -7,10 +7,12 @@ Using this extension requires two steps of configuration:
 1. Register the models of your extension
 2. Configure alternate interface implementations for extbase
 
-Configure extension
-===================
+.. _setup-registry:
 
-This is mainly one call: the method ``register`` of the singleton ``Cyberhouse\DoctrineORM\Utility\ExtensionRegistry``. This should be done in the file ``ext_localconf.php`` like this:
+Register extension entites
+==========================
+
+This is mainly one call: the method ``register`` of the singleton ``Cyberhouse\DoctrineORM\Utility\ExtensionRegistry``. This is one call in the file ``ext_localconf.php``:
 
 .. code-block:: php
 
@@ -29,6 +31,8 @@ The path to the models defaults to the extbase standard of ``EXT:EXT_KEY/Classes
    $registry->register($_EXTKEY, ...$paths); // $path is variadic, so use unpacking for an array of paths
 
 In any case, the path ``EXT:doctrine_orm/Classes/Domain/Model`` is added, which provides several doctrine entites for TYPO3 core tables, like pages and files.
+
+.. _setup-typoscript:
 
 Configure Plugin / Module
 =========================

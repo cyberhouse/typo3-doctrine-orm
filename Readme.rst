@@ -18,10 +18,8 @@ Usage
 
 Using this package requires two steps:
 
-1. Register your extension model classes path and configure extbase two use alternate implementations for various objects.
-2. Create a domain model with the classes of this package as a base instead the default once.
-
-See the following documentation chapters for details on either.
+1. :ref:`setup-registry` and :ref:`setup-typoscript` are the main steps to enable this package.
+2. :ref:`setup-usage` describes how to use it for a Doctrine ORM based domain model.
 
 Development
 -----------
@@ -33,6 +31,6 @@ This extension is developed and maintained publicly on `github.com/cyberhouse/ty
 License
 -------
 
-This package is licensed under the GPL v3. Please see the file *Documentation/License.rst* or the official `FSF GPL Website`_.
+This package is licensed under the GPL v3. Please see the :ref:`license` or the official `FSF GPL Website`_.
 
 .. _FSF GPL Website: https://www.gnu.org/licenses/gpl-3.0.html

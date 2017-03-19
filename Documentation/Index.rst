@@ -15,7 +15,7 @@ Doctrine ORM for TYPO3
     		en
 
     	:Keywords:
-    		orm,doctrine
+    		orm, doctrine
 
     	:Copyright:
     		2017

@@ -1,5 +1,7 @@
 .. include:: Includes.txt
 
+.. _setup-usage:
+
 =======================
 Models and Repositories
 =======================
