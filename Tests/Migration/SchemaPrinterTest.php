@@ -15,17 +15,17 @@ use Cyberhouse\DoctrineORM\Database\CreateTablePrinter;
 use Cyberhouse\DoctrineORM\Migration\SchemaPrinter;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Schema\Schema;
+use Nimut\TestingFramework\TestCase\AbstractTestCase;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\Components\TestingFramework\Core\BaseTestCase;
 
 /**
  * Test the schema printer
  *
  * @author Georg Großberger <georg.grossberger@cyberhouse.at>
  */
-class SchemaPrinterTest extends BaseTestCase
+class SchemaPrinterTest extends AbstractTestCase
 {
     public function testToSql()
     {

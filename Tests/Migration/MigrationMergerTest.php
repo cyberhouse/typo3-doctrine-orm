@@ -22,17 +22,17 @@ use Doctrine\DBAL\Schema\Table;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Tools\SchemaTool;
+use Nimut\TestingFramework\TestCase\AbstractTestCase;
 use TYPO3\CMS\Core\Database\Schema\Parser\Parser;
 use TYPO3\CMS\Core\Database\Schema\SqlReader;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\Components\TestingFramework\Core\BaseTestCase;
 
 /**
  * Test the migration merger
  *
  * @author Georg Großberger <georg.grossberger@cyberhouse.at>
  */
-class MigrationMergerTest extends BaseTestCase
+class MigrationMergerTest extends AbstractTestCase
 {
     public function testInitializeCreateSchemaFromSql()
     {

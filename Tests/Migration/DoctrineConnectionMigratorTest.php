@@ -16,15 +16,15 @@ use Cyberhouse\DoctrineORM\Migration\MigrationMerger;
 use Cyberhouse\DoctrineORM\Utility\EntityManagerFactory;
 use Cyberhouse\DoctrineORM\Utility\ExtensionRegistry;
 use Doctrine\ORM\EntityManager;
+use Nimut\TestingFramework\TestCase\AbstractTestCase;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\Components\TestingFramework\Core\BaseTestCase;
 
 /**
  * Test the connection migrator
  *
  * @author Georg Großberger <georg.grossberger@cyberhouse.at>
  */
-class DoctrineConnectionMigratorTest extends BaseTestCase
+class DoctrineConnectionMigratorTest extends AbstractTestCase
 {
     public function testExistingIsNotChangedIfNoEntityManagers()
     {

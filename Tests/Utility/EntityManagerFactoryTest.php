@@ -16,6 +16,7 @@ use Cyberhouse\DoctrineORM\Utility\ExtensionRegistry;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\EventManager;
 use Doctrine\ORM\EntityManager;
+use Nimut\TestingFramework\TestCase\AbstractTestCase;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -23,14 +24,13 @@ use TYPO3\CMS\Core\Package\Package;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\Components\TestingFramework\Core\BaseTestCase;
 
 /**
  * Test the entity manager factory
  *
  * @author Georg Großberger <georg.grossberger@cyberhouse.at>
  */
-class EntityManagerFactoryTest extends BaseTestCase
+class EntityManagerFactoryTest extends AbstractTestCase
 {
     public function testRegisteredExtensionCreatesAnEntityManager()
     {

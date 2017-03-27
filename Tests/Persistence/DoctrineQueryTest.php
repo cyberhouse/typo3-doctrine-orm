@@ -18,6 +18,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
+use Nimut\TestingFramework\TestCase\AbstractTestCase;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Exception\NotImplementedException;
 use TYPO3\CMS\Extbase\Persistence\Generic\Qom\Comparison;
@@ -25,14 +26,13 @@ use TYPO3\CMS\Extbase\Persistence\Generic\Qom\PropertyValue;
 use TYPO3\CMS\Extbase\Persistence\Generic\Qom\Selector;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
-use TYPO3\Components\TestingFramework\Core\BaseTestCase;
 
 /**
  * Test the doctrine query object wrapper for interface compliance
  *
  * @author Georg Großberger <georg.grossberger@cyberhouse.at>
  */
-class DoctrineQueryTest extends BaseTestCase
+class DoctrineQueryTest extends AbstractTestCase
 {
     public function testInterfaceMethods()
     {
