@@ -22,6 +22,8 @@ use TYPO3\CMS\Extbase\Property\TypeConverter\PersistentObjectConverter;
  */
 class PersistentObjectMapper extends PersistentObjectConverter
 {
+    protected $priority = 30;
+
     /**
      * @inject
      * @var \Cyberhouse\DoctrineORM\Utility\EntityManagerFactory
