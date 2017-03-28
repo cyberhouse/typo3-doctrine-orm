@@ -15,10 +15,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\CMS\Extbase\Persistence\Generic\Exception\NotImplementedException;
-use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
-use TYPO3\CMS\Extbase\Property\TypeConverter\PersistentObjectConverter;
 
 /**
  * Persistence manager for extbase that uses
@@ -50,22 +48,6 @@ class DoctrinePersistenceManager implements PersistenceManagerInterface
      */
     private $currentContext;
 
-    public function __construct()
-    {
-        $this->setup();
-    }
-
-    protected function setup()
-    {
-        GeneralUtility::makeInstance(PersistentObjectConverter::class)->injectPersistenceManager($this);
-    }
-
-    protected function tearDown()
-    {
-        $generic = GeneralUtility::makeInstance(PersistenceManager::class);
-        GeneralUtility::makeInstance(PersistentObjectConverter::class)->injectPersistenceManager($generic);
-    }
-
     public function persistAll()
     {
         $em = $this->getEntityManager();
@@ -77,7 +59,6 @@ class DoctrinePersistenceManager implements PersistenceManagerInterface
 
         $this->em = null;
         $this->factory->reset($this->currentContext);
-        $this->tearDown();
     }
 
     public function clearState()
