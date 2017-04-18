@@ -45,11 +45,18 @@ class CreateTablePrinter
 
         $target[] = 'CREATE TABLE ' . $table . ' (';
 
+        $numOpen = 1;
         $inBraces = false;
         $buffer = '';
 
         while (++$pos < strlen($src)) {
             $char = $src[$pos];
+
+            if ($char === '(') {
+                $numOpen++;
+            } elseif ($char === ')') {
+                $numOpen--;
+            }
 
             switch (true) {
                 case !$inBraces && $char === ',':
@@ -67,6 +74,10 @@ class CreateTablePrinter
                     $inBraces = false;
                     break;
 
+                case !$inBraces && $char === ')' && !$numOpen:
+                    $buffer .= "\n" . $char;
+                    break;
+
                 default:
                     $buffer .= $char;
             }
@@ -77,10 +88,6 @@ class CreateTablePrinter
         }
 
         $sql = implode(LF, $target) . ';';
-
-        if (substr($sql, -2) === ');') {
-            $sql = substr($sql, 0, -2) . LF . ');';
-        }
 
         return $sql . LF;
     }

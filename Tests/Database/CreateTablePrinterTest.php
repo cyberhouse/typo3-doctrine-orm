@@ -29,9 +29,12 @@ class CreateTablePrinterTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testCommonCreateTableSnippet()
+    public function snippetsProvider()
     {
-        $expected = '#
+        return [
+            [
+                'CREATE TABLE `be_groups` (uid int(11) unsigned NOT NULL auto_increment, pid int(11) unsigned DEFAULT \'0\' NOT NULL, tstamp int(11) unsigned DEFAULT \'0\' NOT NULL, title varchar(50) DEFAULT \'\' NOT NULL, non_exclude_fields text, explicit_allowdeny text, PRIMARY KEY (uid), KEY idx_title (pid,title(255)), KEY parent (pid))',
+                '#
 # Table structure for table \'be_groups\'
 #
 CREATE TABLE be_groups (
@@ -45,10 +48,32 @@ CREATE TABLE be_groups (
   KEY idx_title (pid,title(255)),
   KEY parent (pid)
 );
-';
-        $src = 'CREATE TABLE `be_groups` (uid int(11) unsigned NOT NULL auto_increment, pid int(11) unsigned DEFAULT \'0\' NOT NULL, tstamp int(11) unsigned DEFAULT \'0\' NOT NULL, title varchar(50) DEFAULT \'\' NOT NULL, non_exclude_fields text, explicit_allowdeny text, PRIMARY KEY (uid), KEY idx_title (pid,title(255)), KEY parent (pid))';
-        $obj = new CreateTablePrinter();
+'
+            ],
+            [
+                'CREATE TABLE `be_groups` (uid int(11) unsigned NOT NULL auto_increment, pid int(11) unsigned DEFAULT \'0\' NOT NULL, PRIMARY KEY (uid)) COLLATE=utf8_general_ci',
+                '#
+# Table structure for table \'be_groups\'
+#
+CREATE TABLE be_groups (
+  uid int(11) unsigned NOT NULL auto_increment,
+  pid int(11) unsigned DEFAULT \'0\' NOT NULL,
+  PRIMARY KEY (uid)
+) COLLATE=utf8_general_ci;
+'
+            ],
+        ];
+    }
 
+    /**
+     *
+     * @dataProvider snippetsProvider
+     * @param string $src
+     * @param string $expected
+     */
+    public function testCommonCreateTableSnippet($src, $expected)
+    {
+        $obj = new CreateTablePrinter();
         $actual = $obj->getStatement($src);
         $this->assertSame($expected, $actual);
     }
