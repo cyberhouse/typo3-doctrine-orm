@@ -32,10 +32,10 @@ $EM_CONF[$_EXTKEY] = [
     'author_company'     => '',
     'CGLcompliance'      => '',
     'CGLcompliance_note' => '',
-    'version'            => '0.1.0',
+    'version'            => '1.0.0',
     'constraints'        => [
         'depends' => [
-            'typo3'   => '8.6-8.9.99',
+            'typo3'   => '8.6.0-8.7.99',
         ],
         'conflicts' => [],
         'suggests'  => [],
