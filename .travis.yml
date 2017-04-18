@@ -1,0 +1,23 @@
+language: php
+
+notifications:
+  email:
+    recipients:
+      - georg.grossberger@cyberhouse.at
+
+matrix:
+  fast_finish: true
+  include:
+    - php: 7
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+install:
+  - composer install
+
+script:
+  - find . -name "*.php" -not -path "*vendor/*" -exec php -d display_errors=stderr -l {} > /dev/null \;
+  - ./bin/php-cs-fixer fix --config=.php_cs --dry-run --diff
+  - ./bin/phpunit -c phpunit.xml
