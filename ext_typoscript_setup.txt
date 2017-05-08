@@ -5,4 +5,16 @@ config.tx_extbase.objects {
     TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager {
         className = TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
     }
+    TYPO3\CMS\Extbase\Property\TypeConverter\ObjectStorageConverter {
+        className = TYPO3\CMS\Extbase\Property\TypeConverter\ObjectStorageConverter
+    }
+    TYPO3\CMS\Extbase\Property\TypeConverter\PersistentObjectMapper {
+        className = TYPO3\CMS\Extbase\Property\TypeConverter\PersistentObjectMapper
+    }
+    TYPO3\CMS\Extbase\Persistence\QueryInterface {
+        className = TYPO3\CMS\Extbase\Persistence\Generic\Query
+    }
+    TYPO3\CMS\Extbase\Persistence\QueryResultInterface {
+        className = TYPO3\CMS\Extbase\Persistence\Generic\QueryResult
+    }
 }
