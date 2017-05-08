@@ -49,19 +49,21 @@ When using Doctrine ORM, we need alternate implementations, so add the following
        TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface {
          className = Cyberhouse\DoctrineORM\Persistence\DoctrinePersistenceManager
        }
+
        # The Bootstrap class for extbase plugins asks for this class
        # explicitly, so we need to set an implementation for an implementation
        # That's basically an "extbase - XClass"
        TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager {
          className = Cyberhouse\DoctrineORM\Persistence\DoctrinePersistenceManager
        }
+
        # Converter for persisted objects
        TYPO3\CMS\Extbase\Property\TypeConverter\ObjectStorageConverter {
          className = Cyberhouse\DoctrineORM\Persistence\ObjectStorageMapper
        }
 
        # Converter for object relations
-       TYPO3\CMS\Extbase\Property\TypeConverter\ObjectStorageConverter {
+       TYPO3\CMS\Extbase\Property\TypeConverter\PersistentObjectMapper {
          className = Cyberhouse\DoctrineORM\Persistence\PersistentObjectMapper
        }
      }
@@ -82,7 +84,7 @@ For a module use the ``module.`` settings:
        TYPO3\CMS\Extbase\Property\TypeConverter\ObjectStorageConverter {
          className = Cyberhouse\DoctrineORM\Persistence\ObjectStorageMapper
        }
-       TYPO3\CMS\Extbase\Property\TypeConverter\ObjectStorageConverter {
+       TYPO3\CMS\Extbase\Property\TypeConverter\PersistentObjectMapper {
          className = Cyberhouse\DoctrineORM\Persistence\PersistentObjectMapper
        }
      }
