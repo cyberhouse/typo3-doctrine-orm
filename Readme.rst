@@ -31,6 +31,7 @@ This extension is developed and maintained publicly on `github.com/cyberhouse/ty
 License
 -------
 
-This package is licensed under the GPL v3. Please see the :ref:`license` or the official `FSF GPL Website`_.
+This package is licensed under the GPL v3. Please see the file `LICENSE` or the official `FSF GPL Website`_.
 
 .. _FSF GPL Website: https://www.gnu.org/licenses/gpl-3.0.html
+.. _LICENSE: LICENSE
