@@ -41,6 +41,7 @@
   },
   "require-dev": {
     "nimut/testing-framework": "^1.1",
-    "cyberhouse/phpstyle": "^1.1"
+    "cyberhouse/phpstyle": "^1.1",
+    "namelesscoder/typo3-repository-client": "^2.0"
   }
 }
