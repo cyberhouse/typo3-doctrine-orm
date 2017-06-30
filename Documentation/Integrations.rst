@@ -76,7 +76,7 @@ The Doctrine ORM configuration factory has the so called ``devMode`` - switch. d
 Caching
 -------
 
-TYPO3 and Doctrine ORM use similar caching interfaces, but not the same. doctrine_orm registeres a TYPO3 cache, that belongs to the group ``system`` and uses the frontend ``DoctrineCapableFrontend``. This cache is then passed to every entity manager created. So when clearing "All Caches", the Doctrine caches are cleared as well. The backend can be configured using any TYPO3 cache backend in the cacheConfiguration settings of ``doctrine_orm``
+TYPO3 and Doctrine ORM use similar caching interfaces, but not the same. doctrine_orm registers a TYPO3 cache, that belongs to the group ``system`` and uses the frontend ``DoctrineCapableFrontend``. This cache is then passed to every entity manager created. So when clearing "All Caches", the Doctrine caches are cleared as well. The backend can be configured using any TYPO3 cache backend in the cacheConfiguration settings of ``doctrine_orm``
 
 Example: Let doctrine use a redis Backend:
 
