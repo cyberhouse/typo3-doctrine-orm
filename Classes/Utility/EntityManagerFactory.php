@@ -11,7 +11,7 @@ namespace Cyberhouse\DoctrineORM\Utility;
  * <https://www.gnu.org/licenses/gpl-3.0.html>
  */
 
-use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\ORM\Cache;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -58,19 +58,27 @@ class EntityManagerFactory implements SingletonInterface
             $paths = $this->registry->getExtensionPaths($extKey);
             $paths[] = ExtensionManagementUtility::extPath('doctrine_orm') . 'Classes/Domain/Model';
 
-            if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['doctrine_orm']['devMode']) {
-                $cache = new ArrayCache();
-            } else {
-                if ($this->cacheManager->hasCache($extKey . '_orm')) {
-                    $cache = $this->cacheManager->getCache($extKey . '_orm');
-                } else {
-                    if (!$this->cacheManager->hasCache('doctrine_orm')) {
-                        $config = $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations'];
-                        $this->cacheManager->setCacheConfigurations($config);
-                    }
+            $cache = null;
 
-                    $cache = $this->cacheManager->getCache('doctrine_orm');
+            if (!$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['doctrine_orm']['devMode']) {
+                try {
+                    if ($this->cacheManager->hasCache($extKey . '_orm')) {
+                        $cache = $this->cacheManager->getCache($extKey . '_orm');
+                    } else {
+                        if (!$this->cacheManager->hasCache('doctrine_orm')) {
+                            $config = $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations'];
+                            $this->cacheManager->setCacheConfigurations($config);
+                        }
+
+                        $cache = $this->cacheManager->getCache('doctrine_orm');
+                    }
+                } catch (\Exception $_) {
+                    // Noop, ignore
                 }
+            }
+
+            if (!$cache instanceof Cache) {
+                $cache = null;
             }
 
             $proxiesDir = rtrim($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['doctrine_orm']['proxyDir'], '/') . '/';

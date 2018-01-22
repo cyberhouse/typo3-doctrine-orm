@@ -17,9 +17,7 @@ call_user_func(function () {
         $caches['doctrine_orm'] = [];
     }
 
-    if (empty($caches['doctrine_orm']['frontend'])) {
-        $caches['doctrine_orm']['frontend'] = \Cyberhouse\DoctrineORM\Cache\DoctrineCapableFrontend::class;
-    }
+    $caches['doctrine_orm']['frontend'] = \Cyberhouse\DoctrineORM\Cache\DoctrineCapableFrontend::class;
 
     if (empty($caches['doctrine_orm']['backend'])) {
         $caches['doctrine_orm']['backend'] = \TYPO3\CMS\Core\Cache\Backend\SimpleFileBackend::class;
