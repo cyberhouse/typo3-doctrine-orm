@@ -73,7 +73,7 @@ class DoctrineQuery implements QueryInterface
     public function setOrderings(array $orderings)
     {
         foreach ($orderings as $field => $dir) {
-            $this->queryBuilder->addOrderBy($field, $dir);
+            $this->queryBuilder->addOrderBy('e.' . $field, $dir);
         }
         return $this;
     }
@@ -126,42 +126,42 @@ class DoctrineQuery implements QueryInterface
 
     public function equals($propertyName, $operand, $caseSensitive = true)
     {
-        return $this->queryBuilder->expr()->eq($propertyName, $operand);
+        return $this->queryBuilder->expr()->eq('e.' . $propertyName, $operand);
     }
 
     public function like($propertyName, $operand, $caseSensitive = true)
     {
-        return $this->queryBuilder->expr()->like($propertyName, $operand);
+        return $this->queryBuilder->expr()->like('e.' . $propertyName, $operand);
     }
 
     public function contains($propertyName, $operand)
     {
-        return $this->queryBuilder->expr()->isMemberOf($propertyName, $operand);
+        return $this->queryBuilder->expr()->isMemberOf('e.' . $propertyName, $operand);
     }
 
     public function in($propertyName, $operand)
     {
-        return $this->queryBuilder->expr()->in($propertyName, $operand);
+        return $this->queryBuilder->expr()->in('e.' . $propertyName, $operand);
     }
 
     public function lessThan($propertyName, $operand)
     {
-        return $this->queryBuilder->expr()->lt($propertyName, $operand);
+        return $this->queryBuilder->expr()->lt('e.' . $propertyName, $operand);
     }
 
     public function lessThanOrEqual($propertyName, $operand)
     {
-        return $this->queryBuilder->expr()->lte($propertyName, $operand);
+        return $this->queryBuilder->expr()->lte('e.' . $propertyName, $operand);
     }
 
     public function greaterThan($propertyName, $operand)
     {
-        return $this->queryBuilder->expr()->gt($propertyName, $operand);
+        return $this->queryBuilder->expr()->gt('e.' . $propertyName, $operand);
     }
 
     public function greaterThanOrEqual($propertyName, $operand)
     {
-        return $this->queryBuilder->expr()->gte($propertyName, $operand);
+        return $this->queryBuilder->expr()->gte('e.' . $propertyName, $operand);
     }
 
     public function getType()
@@ -218,7 +218,7 @@ class DoctrineQuery implements QueryInterface
     public function isEmpty($propertyName)
     {
         return $this->logicalOr([
-            $this->queryBuilder->expr()->isNull($propertyName),
+            $this->queryBuilder->expr()->isNull('e.' . $propertyName),
             $this->equals($propertyName, ''),
             $this->equals($propertyName, 0),
         ]);
