@@ -2,7 +2,7 @@
 namespace Cyberhouse\DoctrineORM\Tests\Utility;
 
 /*
- * This file is (c) 2017 by Cyberhouse GmbH
+ * This file is (c) 2018 by Cyberhouse GmbH
  *
  * It is free software; you can redistribute it and/or
  * modify it under the terms of the GPLv3 license
