@@ -11,6 +11,7 @@ namespace Cyberhouse\DoctrineORM\Utility;
  * <https://www.gnu.org/licenses/gpl-3.0.html>
  */
 
+use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;
@@ -47,6 +48,12 @@ class EntityManagerFactory implements SingletonInterface
      * @var array|[]EntityManager
      */
     protected $known = [];
+
+    public function __construct()
+    {
+        AnnotationReader::addGlobalIgnoredName('ignore');
+        AnnotationReader::addGlobalIgnoredName('validate');
+    }
 
     /**
      * @param string $extKey
